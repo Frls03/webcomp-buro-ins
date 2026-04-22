@@ -503,6 +503,29 @@ button:disabled {
 }
 
 @media (max-width: 1024px) {
+  .panel {
+    padding: 0.85rem;
+    gap: 0.85rem;
+  }
+
+  .card {
+    border-radius: 16px;
+    padding: 0.9rem;
+  }
+
+  .toolbar {
+    align-items: flex-start;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-actions button {
+    flex: 1 1 160px;
+  }
+
   .filters {
     grid-template-columns: 1fr;
   }
@@ -527,6 +550,7 @@ button:disabled {
   .live-controls {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.45rem;
   }
 
   .floating-toast {
@@ -536,4 +560,194 @@ button:disabled {
     max-width: none;
   }
 
+  .modal-card {
+    width: min(940px, 100%);
+    max-height: 92vh;
+  }
+}
+
+@media (max-width: 760px) {
+  .auth-wrap {
+    padding: 0.75rem;
+  }
+
+  .auth-card {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .panel {
+    padding: 0.7rem;
+    gap: 0.7rem;
+  }
+
+  .card {
+    border-radius: 14px;
+    padding: 0.8rem;
+  }
+
+  .toolbar-actions button {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .live-controls {
+    width: 100%;
+  }
+
+  .live-controls label,
+  .live-controls button {
+    width: 100%;
+  }
+
+  .table-wrap {
+    overflow: visible;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  tbody tr {
+    margin-bottom: 0.7rem;
+    border: 1px solid #efddc8;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 0.6rem;
+  }
+
+  tbody tr.selected {
+    border-color: #e4a262;
+  }
+
+  td {
+    border-bottom: 1px dashed #ead5be;
+    padding: 0.5rem 0;
+    display: grid;
+    grid-template-columns: 8.2rem 1fr;
+    gap: 0.45rem;
+    align-items: start;
+    word-break: break-word;
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  td::before {
+    font-size: 0.77rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #6a727d;
+    font-weight: 700;
+    padding-top: 2px;
+  }
+
+  td:nth-child(1)::before { content: "Fecha"; }
+  td:nth-child(2)::before { content: "Nombre"; }
+  td:nth-child(3)::before { content: "Correo"; }
+  td:nth-child(4)::before { content: "Telefono"; }
+  td:nth-child(5)::before { content: "Empresa"; }
+  td:nth-child(6)::before { content: "Puesto"; }
+  td:nth-child(7)::before { content: "Grado"; }
+  td:nth-child(8)::before { content: "Cursos"; }
+  td:nth-child(9)::before { content: "Estado"; }
+  td:nth-child(10)::before { content: "Acciones"; }
+
+  .courses-summary-cell {
+    max-width: none;
+  }
+
+  .table-action {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pagination button {
+    width: 100%;
+  }
+
+  .modal-backdrop {
+    padding: 0.55rem;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-height: 94vh;
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .modal-header {
+    margin-bottom: 0.6rem;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 0.45rem;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel {
+    padding: 0.55rem;
+  }
+
+  .card {
+    padding: 0.7rem;
+  }
+
+  h1 {
+    font-size: 1.42rem;
+    line-height: 1.15;
+  }
+
+  .brand-kicker {
+    font-size: 0.68rem;
+  }
+
+  .floating-toast {
+    left: 0.55rem;
+    right: 0.55rem;
+    bottom: 0.55rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  td {
+    grid-template-columns: 6.4rem 1fr;
+    font-size: 0.88rem;
+  }
+
+  td::before {
+    font-size: 0.7rem;
+  }
 }
