@@ -11,5 +11,12 @@ export function normalizeEmail(value) {
 }
 
 export function normalizePhone(value) {
-  return sanitizeText(value).replace(/[^+\d\s()-]/g, "");
+  const cleaned = sanitizeText(value);
+  const hasPlus = cleaned.trim().startsWith("+");
+  const digits = cleaned.replace(/\D/g, "");
+  return hasPlus ? `+${digits}` : digits;
+}
+
+export function isInternationalPhone(value) {
+  return /^\+[1-9]\d{7,14}$/.test(String(value || ""));
 }

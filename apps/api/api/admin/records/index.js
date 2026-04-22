@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { normalizeEmail, normalizePhone, sanitizeText } from "@buro-ins/shared/src/sanitize.js";
+import { isInternationalPhone, normalizeEmail, normalizePhone, sanitizeText } from "@buro-ins/shared/src/sanitize.js";
 import { REGISTRATION_STATUSES } from "@buro-ins/shared/src/constants.js";
 import { withCors } from "../../../lib/cors.js";
 import { badRequest, forbidden, methodNotAllowed, serverError, unauthorized } from "../../../lib/http.js";
@@ -9,7 +9,12 @@ import { supabaseAdmin } from "../../../lib/supabaseAdmin.js";
 const createRegistrationSchema = z.object({
   fullName: z.string().min(3).max(120).transform(sanitizeText),
   email: z.string().email().max(160).transform(normalizeEmail),
-  phone: z.string().min(8).max(30).transform(normalizePhone),
+  phone: z
+    .string()
+    .min(8)
+    .max(30)
+    .transform(normalizePhone)
+    .refine(isInternationalPhone),
   companyName: z.string().min(2).max(160).transform(sanitizeText),
   jobPosition: z.string().min(2).max(120).transform(sanitizeText),
   academicDegree: z.string().min(2).max(120).transform(sanitizeText),

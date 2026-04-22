@@ -5,6 +5,10 @@ import { enforceRateLimit, getClientIp, hashIp, verifyTurnstileToken } from "../
 import { sendWelcomeEmail } from "../../lib/mailer.js";
 import { supabaseAdmin } from "../../lib/supabaseAdmin.js";
 
+function isLocalhostOrigin(origin) {
+  return /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/i.test(String(origin || ""));
+}
+
 export default async function handler(req, res) {
   if (!withCors(req, res, "public")) return;
   if (req.method !== "POST") return methodNotAllowed(res);
@@ -13,11 +17,14 @@ export default async function handler(req, res) {
     const payload = parseOrThrow(registrationSchema, req.body || {});
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
+    const isProductionRuntime =
+      process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+    const shouldBypassTurnstile = !isProductionRuntime && isLocalhostOrigin(req.headers.origin);
 
     const allowed = await enforceRateLimit(ipHash, "public-inscriptions", 5, 300);
     if (!allowed) return badRequest(res, "Demasiados intentos. Intenta mas tarde.");
 
-    const captchaOk = await verifyTurnstileToken(payload.turnstileToken, clientIp);
+    const captchaOk = shouldBypassTurnstile || await verifyTurnstileToken(payload.turnstileToken, clientIp);
     if (!captchaOk) return badRequest(res, "Captcha invalido.");
 
     const uniqueCourseIds = [...new Set(payload.courseIds)];

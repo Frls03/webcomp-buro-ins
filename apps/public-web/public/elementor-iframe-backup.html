@@ -1,0 +1,31 @@
+<!-- Backup iframe snippet for Elementor -->
+<div id="nexlum-iframe-wrap" style="width:100%;max-width:980px;margin:0 auto;">
+  <iframe
+    id="nexlum-form-iframe"
+    src="https://form.nexlum.site/inscripcion"
+    title="Formulario de inscripcion"
+    style="width:100%;min-height:1200px;border:0;border-radius:12px;background:#fff;"
+    loading="lazy"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allow="clipboard-write"
+  ></iframe>
+</div>
+
+<script>
+  (function () {
+    var iframe = document.getElementById("nexlum-form-iframe");
+    if (!iframe) return;
+
+    window.addEventListener("message", function (event) {
+      if (!event || !event.data) return;
+      if (event.origin !== "https://form.nexlum.site") return;
+      if (event.data.source !== "buro-ins-public-web") return;
+      if (event.data.type !== "iframe:resize") return;
+
+      var nextHeight = Number(event.data.height || 0);
+      if (nextHeight > 300) {
+        iframe.style.height = String(nextHeight + 24) + "px";
+      }
+    });
+  })();
+</script>

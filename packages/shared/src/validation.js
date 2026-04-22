@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MAX_INTEREST_LENGTH, MAX_NOTES_LENGTH, REGISTRATION_STATUSES } from "./constants.js";
-import { normalizeEmail, normalizePhone, sanitizeText } from "./sanitize.js";
+import { isInternationalPhone, normalizeEmail, normalizePhone, sanitizeText } from "./sanitize.js";
 
 export const registrationSchema = z.object({
   fullName: z
@@ -17,7 +17,11 @@ export const registrationSchema = z.object({
     .string({ required_error: "Ingresa tu numero de telefono." })
     .min(8, "Ingresa un telefono valido.")
     .max(30, "El telefono es demasiado largo.")
-    .transform(normalizePhone),
+    .transform(normalizePhone)
+    .refine(
+      isInternationalPhone,
+      "Ingresa tu numero con el prefijo del area/pais donde vives, por ejemplo +50212345678."
+    ),
   companyName: z
     .string({ required_error: "Ingresa la empresa donde laboras." })
     .min(2, "Ingresa la empresa donde laboras.")

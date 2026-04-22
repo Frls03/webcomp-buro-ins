@@ -57,8 +57,12 @@ export default function App() {
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   const bannerSrc = `${import.meta.env.BASE_URL}business-week-banner.png`;
   const isDevelopment = import.meta.env.DEV;
+  const isLocalHost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  const shouldUseTurnstile = !isLocalHost;
   const isTurnstileConfigured = Boolean(turnstileSiteKey && turnstileSiteKey !== "replace-me");
-  const isTurnstileBypassed = isDevelopment && !isTurnstileConfigured;
+  const isTurnstileBypassed = isLocalHost || (isDevelopment && !isTurnstileConfigured);
   const hasCaptchaToken = isTurnstileBypassed || form.turnstileToken.length >= 10;
   const hasCourseSelection = form.courseIds.length > 0;
 
@@ -170,12 +174,12 @@ export default function App() {
     event.preventDefault();
     setSuccessMessage("");
 
-    if (!isTurnstileConfigured && !isDevelopment) {
+    if (shouldUseTurnstile && !isTurnstileConfigured && !isDevelopment) {
       setErrors({ global: "La verificación anti-spam no está configurada." });
       return;
     }
 
-    if (isTurnstileConfigured && !form.turnstileToken) {
+    if (shouldUseTurnstile && isTurnstileConfigured && !form.turnstileToken) {
       setErrors({ turnstileToken: "Completa la verificación de seguridad." });
       return;
     }
@@ -234,8 +238,8 @@ export default function App() {
             <input id="email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" required />
             {errors.email && <p className="error">{errors.email}</p>}
 
-            <label htmlFor="phone">Número de teléfono</label>
-            <input id="phone" name="phone" value={form.phone} onChange={updateField} autoComplete="tel" required />
+            <label htmlFor="phone">Numero de telefono (con codigo de pais)</label>
+            <input id="phone" name="phone" value={form.phone} onChange={updateField} autoComplete="tel" inputMode="tel" placeholder="+50212345678" required />
             {errors.phone && <p className="error">{errors.phone}</p>}
 
             <label htmlFor="companyName">Empresa donde laboras</label>
@@ -303,7 +307,7 @@ export default function App() {
             </div>
             {errors.privacyAccepted && <p className="error">{errors.privacyAccepted}</p>}
 
-            {isTurnstileConfigured ? (
+            {shouldUseTurnstile && isTurnstileConfigured ? (
               <TurnstileWidget
                 siteKey={turnstileSiteKey}
                 onToken={handleTurnstileToken}
@@ -312,8 +316,8 @@ export default function App() {
             ) : (
               <p className="hint">
                 {isTurnstileBypassed
-                  ? "Verificación anti-spam en modo desarrollo."
-                  : "Verificación anti-spam pendiente de configuración."}
+                  ? "Verificacion anti-spam desactivada para entorno local."
+                  : "Verificacion anti-spam pendiente de configuracion."}
               </p>
             )}
             {errors.turnstileToken && <p className="error">{errors.turnstileToken}</p>}
@@ -341,3 +345,5 @@ export default function App() {
     </main>
   );
 }
+
+

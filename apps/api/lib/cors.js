@@ -1,7 +1,7 @@
 import { env } from "./env.js";
 
 function isLocalhostOrigin(origin) {
-  return /^https?:\/\/localhost:\d+$/.test(origin);
+  return /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/i.test(origin);
 }
 
 const defaultOriginsByZone = {
@@ -30,9 +30,11 @@ function isAllowed(origin, zone) {
 
   if (allowedOrigins.includes(origin)) return true;
 
-  // In local development we allow localhost with any port to avoid CORS blocks
-  // when Vite auto-switches ports because one is already in use.
-  if (process.env.NODE_ENV !== "production" && isLocalhostOrigin(origin)) {
+  // Allow localhost only outside production environments.
+  // We check both NODE_ENV and VERCEL_ENV to avoid accidental exposure.
+  const isProductionRuntime =
+    process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+  if (!isProductionRuntime && isLocalhostOrigin(origin)) {
     return true;
   }
 

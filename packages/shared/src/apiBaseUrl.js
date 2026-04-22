@@ -16,6 +16,10 @@ function isLocalUrl(value) {
   return /^https?:\/\/localhost(?::\d+)?$/i.test(trimTrailingSlash(value));
 }
 
+function isLocalHostName(hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
 function inferProductionApiBaseUrl(hostname) {
   if (!hostname) return "";
 
@@ -36,6 +40,12 @@ export function resolveApiBaseUrl(configuredValue) {
   const { hostname, protocol } = window.location;
   const inferredValue = inferProductionApiBaseUrl(hostname);
   const isProductionPage = protocol === "https:";
+
+  // In local browser sessions we always target the local API server.
+  // This keeps `npm run dev:stack` working even when .env has production URLs.
+  if (isLocalHostName(hostname)) {
+    return "http://localhost:3000";
+  }
 
   if (trimmedConfiguredValue && !(isProductionPage && isLocalUrl(trimmedConfiguredValue))) {
     return trimmedConfiguredValue;

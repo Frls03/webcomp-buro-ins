@@ -723,11 +723,13 @@ export default function App() {
               </div>
 
               <div className="field-block">
-                <label htmlFor="create-phone">Teléfono</label>
+                <label htmlFor="create-phone">Telefono (con codigo de pais)</label>
                 <input
                   id="create-phone"
                   value={createForm.phone}
                   onChange={(event) => setCreateForm((prev) => ({ ...prev, phone: event.target.value }))}
+                  inputMode="tel"
+                  placeholder="+50212345678"
                   required
                 />
               </div>
@@ -822,3 +824,4 @@ export default function App() {
     </main>
   );
 }
+
