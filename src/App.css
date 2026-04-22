@@ -1,0 +1,321 @@
+.shell {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 10px 4px;
+}
+
+.brand-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.74rem;
+  color: #176270;
+  font-weight: 700;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.72rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: #0e6f82;
+  color: #f2feff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 127, 147, 0.2);
+}
+
+button.ghost {
+  background: #edf7f9;
+  color: #1e5863;
+  border: 1px solid #cbe7eb;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.two-columns {
+  grid-template-columns: 1.1fr 1fr;
+}
+
+.one-column {
+  grid-template-columns: 1fr;
+}
+
+.public-layout {
+  place-items: center;
+}
+
+.public-form-card {
+  width: min(760px, 100%);
+}
+
+.admin-layout {
+  grid-template-columns: 1.7fr 1fr;
+}
+
+.card {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(245, 254, 255, 0.95));
+  border: 1px solid #d5eaee;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 16px 48px rgba(16, 52, 68, 0.12);
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::before {
+  content: '';
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 235, 250, 0.42), transparent 70%);
+  top: -60px;
+  right: -40px;
+}
+
+.chip {
+  display: inline-flex;
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #0e7083;
+  background: rgba(14, 112, 131, 0.12);
+}
+
+.feature-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.feature-list li {
+  padding: 8px 12px;
+  border: 1px solid #d7edf0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.intro-copy {
+  margin: 8px 0 16px;
+  color: #35575f;
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  font-weight: 700;
+  color: #20434b;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid #9fbdc6;
+  border-radius: 11px;
+  padding: 0.72rem 0.8rem;
+  font: inherit;
+  background: #fff;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid rgba(15, 127, 147, 0.22);
+  border-color: #0f7f93;
+}
+
+.inline-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.inline-check input {
+  transform: scale(1.15);
+  margin-top: 4px;
+}
+
+.error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.92rem;
+}
+
+.success {
+  margin: 10px 2px 0;
+  color: #046c4e;
+  font-weight: 600;
+}
+
+.auth-area {
+  place-items: center;
+}
+
+.auth-card {
+  width: min(520px, 100%);
+}
+
+.tiny {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #56757d;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.filters {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 8px;
+}
+
+.table-wrap {
+  overflow: auto;
+  margin-top: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #d8eaef;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: rgba(229, 247, 251, 0.7);
+}
+
+tbody tr.selected {
+  background: rgba(195, 239, 247, 0.52);
+}
+
+.status-pill {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.status-pill.pending {
+  background: #fff7dd;
+  color: #8f5d00;
+}
+
+.status-pill.reviewed,
+.status-pill.waitlist {
+  background: #e5efff;
+  color: #214f9a;
+}
+
+.status-pill.accepted {
+  background: #dff7eb;
+  color: #0d6f47;
+}
+
+.status-pill.rejected {
+  background: #fee4e2;
+  color: #9d2318;
+}
+
+.pager {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-card {
+  align-self: start;
+}
+
+.notes-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.notes-list li {
+  border: 1px solid #d9ebef;
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.notes-list span {
+  font-size: 0.8rem;
+  color: #58727a;
+}
+
+.notes-list p {
+  margin: 6px 0 0;
+}
+
+@media (max-width: 1080px) {
+  .two-columns,
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}

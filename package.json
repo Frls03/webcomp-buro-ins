@@ -1,0 +1,36 @@
+{
+  "name": "webcomp-buro-ins",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:stack": "npm run dev:reset && concurrently -k -n API,PUBLIC,ADMIN -c cyan,green,magenta \"npm run dev:api\" \"npm run dev:public\" \"npm run dev:admin\"",
+    "dev:reset": "kill-port 3000 5173 5174",
+    "build:demo": "vite build",
+    "preview": "vite preview",
+    "dev:public": "npm run dev --workspace public-web",
+    "dev:admin": "npm run dev --workspace admin-web",
+    "dev:api": "npm run dev --workspace api-service",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "preview:public": "npm run preview --workspace public-web",
+    "preview:admin": "npm run preview --workspace admin-web"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "kill-port": "^2.0.1",
+    "vite": "^8.0.4"
+  },
+  "workspaces": [
+    "apps/public-web",
+    "apps/admin-web",
+    "apps/api",
+    "packages/shared"
+  ]
+}

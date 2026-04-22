@@ -1,0 +1,26 @@
+{
+  "name": "api-service",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "kill-port 3000 && node dev-server.js",
+    "dev:watch": "kill-port 3000 && node --watch dev-server.js",
+    "start": "kill-port 3000 && node dev-server.js",
+    "dev:vercel": "vercel dev",
+    "serve": "vercel dev",
+    "lint": "eslint . --ext .js"
+  },
+  "dependencies": {
+    "@buro-ins/shared": "1.0.0",
+    "@supabase/supabase-js": "^2.49.1",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.0",
+    "kill-port": "^2.0.1",
+    "vercel": "^39.2.0"
+  }
+}

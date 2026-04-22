@@ -1,0 +1,48 @@
+:root {
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  color: #183741;
+  background: #ebfbff;
+  line-height: 1.4;
+  font-weight: 500;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(900px 340px at 7% -10%, rgba(117, 230, 244, 0.45), transparent 65%),
+    radial-gradient(700px 280px at 100% 0%, rgba(141, 245, 214, 0.35), transparent 65%),
+    linear-gradient(180deg, #edfafe 0%, #e9f5f8 100%);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: #15363f;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+}
+
+h2 {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+}
+
+p {
+  margin: 0;
+}
