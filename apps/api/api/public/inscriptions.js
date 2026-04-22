@@ -24,7 +24,9 @@ export default async function handler(req, res) {
     const allowed = await enforceRateLimit(ipHash, "public-inscriptions", 5, 300);
     if (!allowed) return badRequest(res, "Demasiados intentos. Intenta mas tarde.");
 
-    const captchaOk = shouldBypassTurnstile || await verifyTurnstileToken(payload.turnstileToken, clientIp);
+    const captchaOk =
+      shouldBypassTurnstile ||
+      await verifyTurnstileToken(payload.turnstileToken, clientIp, req.headers.origin || "");
     if (!captchaOk) return badRequest(res, "Captcha invalido.");
 
     const uniqueCourseIds = [...new Set(payload.courseIds)];

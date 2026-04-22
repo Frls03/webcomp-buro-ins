@@ -9,6 +9,7 @@ export const env = {
   supabaseAnonKey: required("SUPABASE_ANON_KEY"),
   supabaseServiceRoleKey: required("SUPABASE_SERVICE_ROLE_KEY"),
   turnstileSecret: required("TURNSTILE_SECRET_KEY"),
+  turnstileSecretSomosBuro: process.env.TURNSTILE_SECRET_KEY_SOMOSBURO || "",
   publicAllowedOrigin: required("PUBLIC_ALLOWED_ORIGIN"),
   adminAllowedOrigin: required("ADMIN_ALLOWED_ORIGIN"),
   welcomeEmailEnabled: process.env.WELCOME_EMAIL_ENABLED || "false",

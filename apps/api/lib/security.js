@@ -6,6 +6,19 @@ function isTurnstileBypassedInDev() {
   return process.env.NODE_ENV !== "production" && env.turnstileSecret === "replace-me";
 }
 
+function resolveTurnstileSecretForOrigin(origin) {
+  const normalizedOrigin = String(origin || "").toLowerCase();
+  const isSomosBuroOrigin =
+    normalizedOrigin.startsWith("https://somosburo.com") ||
+    normalizedOrigin.startsWith("https://www.somosburo.com");
+
+  if (isSomosBuroOrigin && env.turnstileSecretSomosBuro) {
+    return env.turnstileSecretSomosBuro;
+  }
+
+  return env.turnstileSecret;
+}
+
 export function getClientIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
   if (typeof forwarded === "string" && forwarded.length > 0) {
@@ -18,7 +31,7 @@ export function hashIp(ip) {
   return crypto.createHash("sha256").update(ip).digest("hex");
 }
 
-export async function verifyTurnstileToken(token, ip) {
+export async function verifyTurnstileToken(token, ip, origin = "") {
   if (isTurnstileBypassedInDev()) {
     return true;
   }
@@ -28,7 +41,7 @@ export async function verifyTurnstileToken(token, ip) {
   }
 
   const body = new URLSearchParams({
-    secret: env.turnstileSecret,
+    secret: resolveTurnstileSecretForOrigin(origin),
     response: token,
     remoteip: ip
   });
