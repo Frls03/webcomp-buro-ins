@@ -88,6 +88,75 @@ body {
   gap: 0.5rem;
 }
 
+.live-controls {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 0.25rem;
+}
+
+.live-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #7a460d;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(239, 125, 0, 0.12);
+  border: 1px solid rgba(239, 125, 0, 0.24);
+}
+
+.live-controls input[type="checkbox"] {
+  accent-color: var(--primary);
+}
+
+.live-banner {
+  margin: 0;
+  padding: 0.68rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid #f0be88;
+  color: #8f4d00;
+  background: linear-gradient(130deg, #ffe7ce, #fff4e9);
+  font-weight: 700;
+}
+
+.floating-toast {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  max-width: min(420px, calc(100vw - 2rem));
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid #e8b57d;
+  background: linear-gradient(130deg, #ffe2c0, #fff0e0);
+  box-shadow: 0 14px 34px rgba(62, 39, 16, 0.2);
+  animation: toast-in 220ms ease-out;
+}
+
+.floating-toast p {
+  margin: 0;
+  color: #7a4200;
+  font-weight: 700;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .role-caption {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;
@@ -453,6 +522,18 @@ button:disabled {
   .courses-grid,
   .courses-grid.compact {
     grid-template-columns: 1fr;
+  }
+
+  .live-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .floating-toast {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    max-width: none;
   }
 
 }

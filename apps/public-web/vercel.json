@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/inscripcion",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/inscripcion/:path*",
+      "destination": "/:path*"
+    }
+  ]
+}

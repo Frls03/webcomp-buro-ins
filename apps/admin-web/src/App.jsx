@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { REGISTRATION_STATUSES } from "@buro-ins/shared/src/constants.js";
 import { adminUpdateSchema } from "@buro-ins/shared/src/validation.js";
 import { createRecord, deleteRecord, exportCsv, getRecordById, getRecords, updateRecord } from "./lib/api.js";
 import { supabase } from "./lib/supabase.js";
 
 const WEEK_DAYS = ["Lunes", "Martes", "Miercoles", "Jueves"];
+const AUTO_REFRESH_MS = 15000;
 
 const defaultFilters = {
   search: "",
@@ -72,6 +73,110 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [screenError, setScreenError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [realtimeMessage, setRealtimeMessage] = useState("");
+  const [unreadRealtimeCount, setUnreadRealtimeCount] = useState(0);
+  const [isRealtimeToastVisible, setIsRealtimeToastVisible] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(
+    typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported"
+  );
+
+  const audioContextRef = useRef(null);
+  const hasAlertBaselineRef = useRef(false);
+  const previousTotalRef = useRef(0);
+  const previousIdsRef = useRef(new Set());
+
+  const playNotificationSound = useCallback((force = false) => {
+    if (!force && !soundEnabled) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      if (!audioContextRef.current || audioContextRef.current.state === "closed") {
+        audioContextRef.current = new AudioContextClass();
+      }
+
+      const ctx = audioContextRef.current;
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      oscillator.type = "triangle";
+      oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+      gainNode.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + 0.21);
+    } catch {
+      // Ignore sound errors caused by browser autoplay policies.
+    }
+  }, [soundEnabled]);
+
+  const triggerRealtimeAlert = useCallback((count = 1) => {
+    const message = count === 1 ? "Nueva inscripcion recibida." : `${count} nuevas inscripciones recibidas.`;
+    setRealtimeMessage(message);
+    setIsRealtimeToastVisible(true);
+    setUnreadRealtimeCount((prev) => prev + count);
+    playNotificationSound();
+
+    if (notificationPermission === "granted") {
+      try {
+        new Notification("Panel de inscripciones", { body: message });
+      } catch {
+        // Ignore browser notification errors.
+      }
+    }
+  }, [notificationPermission, playNotificationSound]);
+
+  async function requestNotificationPermission() {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+  }
+
+  function syncAlertBaseline(items = [], total = 0) {
+    previousIdsRef.current = new Set((items || []).map((item) => item.id));
+    previousTotalRef.current = Number(total || 0);
+    hasAlertBaselineRef.current = true;
+  }
+
+  function detectNewRowsAndAlert(items = [], total = 0) {
+    const safeItems = items || [];
+    const safeTotal = Number(total || 0);
+
+    if (!hasAlertBaselineRef.current) {
+      syncAlertBaseline(safeItems, safeTotal);
+      return;
+    }
+
+    const currentIds = new Set(safeItems.map((item) => item.id));
+    const newVisibleRows = safeItems.filter((item) => !previousIdsRef.current.has(item.id)).length;
+    const totalDelta = Math.max(0, safeTotal - previousTotalRef.current);
+    const shouldAlert = Math.max(newVisibleRows, totalDelta);
+
+    previousIdsRef.current = currentIds;
+    previousTotalRef.current = safeTotal;
+
+    if (shouldAlert > 0) {
+      triggerRealtimeAlert(shouldAlert);
+    }
+  }
+
+  function toggleSound(nextValue) {
+    setSoundEnabled(nextValue);
+    if (nextValue) {
+      playNotificationSound(true);
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session || null));
@@ -80,6 +185,14 @@ export default function App() {
     });
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!isRealtimeToastVisible) return undefined;
+    const timeoutId = window.setTimeout(() => {
+      setIsRealtimeToastVisible(false);
+    }, 7000);
+    return () => window.clearTimeout(timeoutId);
+  }, [isRealtimeToastVisible, realtimeMessage]);
 
   const token = session?.access_token;
 
@@ -94,11 +207,17 @@ export default function App() {
     await supabase.auth.signOut();
     setSelected(null);
     setIsDetailOpen(false);
+    setRealtimeMessage("");
+    setIsRealtimeToastVisible(false);
+    setUnreadRealtimeCount(0);
+    hasAlertBaselineRef.current = false;
+    previousTotalRef.current = 0;
+    previousIdsRef.current = new Set();
   }
 
-  async function loadRecords() {
+  const loadRecords = useCallback(async ({ silent = false, mode = "standard" } = {}) => {
     if (!token) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     setScreenError("");
     try {
       const data = await getRecords(token, filters);
@@ -112,17 +231,53 @@ export default function App() {
         const detail = await getRecordById(token, selected.id);
         setSelected(detail.item);
       }
+
+      if (mode === "poll") {
+        detectNewRowsAndAlert(data.items || [], data.total || 0);
+      } else {
+        syncAlertBaseline(data.items || [], data.total || 0);
+      }
+
+      return data;
     } catch (error) {
       setScreenError(error.message);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  }
+    return null;
+  }, [filters, selected?.id, token, triggerRealtimeAlert]);
 
   useEffect(() => {
     loadRecords();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, filters.page, filters.pageSize, filters.search, filters.status, filters.courseId]);
+  }, [loadRecords]);
+
+  useEffect(() => {
+    if (!token || !autoRefreshEnabled) return undefined;
+    const intervalId = window.setInterval(() => {
+      loadRecords({ silent: true, mode: "poll" });
+    }, AUTO_REFRESH_MS);
+    return () => window.clearInterval(intervalId);
+  }, [autoRefreshEnabled, loadRecords, token]);
+
+  useEffect(() => {
+    if (!token || !autoRefreshEnabled) return undefined;
+
+    const channel = supabase
+      .channel("admin-registrations-live")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "registrations" },
+        () => {
+          triggerRealtimeAlert(1);
+          loadRecords({ silent: true, mode: "standard" });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [autoRefreshEnabled, loadRecords, token, triggerRealtimeAlert]);
 
   const coursesByDay = useMemo(() => {
     const grouped = new Map(WEEK_DAYS.map((day) => [day, []]));
@@ -314,6 +469,39 @@ export default function App() {
           {permissions.export && <button type="button" onClick={downloadCsv}>Exportar CSV</button>}
           <button type="button" className="ghost" onClick={signOut}>Cerrar sesión</button>
         </div>
+        <div className="live-controls">
+          <label>
+            <input
+              type="checkbox"
+              checked={autoRefreshEnabled}
+              onChange={(event) => setAutoRefreshEnabled(event.target.checked)}
+            />
+            Auto refresh
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={soundEnabled}
+              onChange={(event) => toggleSound(event.target.checked)}
+            />
+            Sonido
+          </label>
+          {notificationPermission !== "unsupported" && notificationPermission !== "granted" && (
+            <button type="button" className="ghost" onClick={requestNotificationPermission}>Habilitar notificaciones</button>
+          )}
+          {unreadRealtimeCount > 0 && (
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => {
+                setUnreadRealtimeCount(0);
+                setRealtimeMessage("");
+              }}
+            >
+              {unreadRealtimeCount} nuevas
+            </button>
+          )}
+        </div>
       </header>
 
       <section className="filters card">
@@ -336,6 +524,18 @@ export default function App() {
         </select>
       </section>
 
+      {realtimeMessage && isRealtimeToastVisible && (
+        <aside className="floating-toast" role="status" aria-live="polite">
+          <p>{realtimeMessage}</p>
+          <button
+            type="button"
+            className="ghost"
+            onClick={() => setIsRealtimeToastVisible(false)}
+          >
+            Cerrar
+          </button>
+        </aside>
+      )}
       {screenError && <p className="error">{screenError}</p>}
 
       <section className="content-grid">
