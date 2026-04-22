@@ -1,4 +1,6 @@
-const PUBLIC_API_BASE_URL = import.meta.env.VITE_PUBLIC_API_BASE_URL;
+import { resolveApiBaseUrl } from "@buro-ins/shared/src/apiBaseUrl.js";
+
+const PUBLIC_API_BASE_URL = resolveApiBaseUrl(import.meta.env.VITE_PUBLIC_API_BASE_URL);
 
 async function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -4,6 +4,11 @@ function isLocalhostOrigin(origin) {
   return /^https?:\/\/localhost:\d+$/.test(origin);
 }
 
+const defaultOriginsByZone = {
+  public: ["https://form.nexlum.site"],
+  admin: ["https://admin.nexlum.site"]
+};
+
 function parseAllowedOrigins(rawValue) {
   return String(rawValue || "")
     .split(",")
@@ -18,8 +23,9 @@ function isAllowed(origin, zone) {
     zone === "public"
       ? parseAllowedOrigins(env.publicAllowedOrigin)
       : parseAllowedOrigins(env.adminAllowedOrigin);
+  const allowedOrigins = [...new Set([...(defaultOriginsByZone[zone] || []), ...configuredOrigins])];
 
-  if (configuredOrigins.includes(origin)) return true;
+  if (allowedOrigins.includes(origin)) return true;
 
   // In local development we allow localhost with any port to avoid CORS blocks
   // when Vite auto-switches ports because one is already in use.
