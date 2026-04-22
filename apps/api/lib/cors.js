@@ -13,6 +13,9 @@ function parseAllowedOrigins(rawValue) {
   return String(rawValue || "")
     .split(",")
     .map((item) => item.trim())
+    .map((item) => item.replace(/^['"]|['"]$/g, ""))
+    .map((item) => item.replace(/\/+$/, ""))
+    .map((item) => (/^https?:\/\//i.test(item) ? item : (item ? `https://${item}` : item)))
     .filter(Boolean);
 }
 

@@ -2,6 +2,16 @@ function trimTrailingSlash(value) {
   return String(value || "").replace(/\/+$/, "");
 }
 
+function normalizeConfiguredUrl(value) {
+  const raw = trimTrailingSlash(value).trim().replace(/^['"]|['"]$/g, "");
+  if (!raw) return "";
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(?::\d+)?$/i.test(raw)) {
+    return `https://${raw}`;
+  }
+  return raw;
+}
+
 function isLocalUrl(value) {
   return /^https?:\/\/localhost(?::\d+)?$/i.test(trimTrailingSlash(value));
 }
@@ -17,7 +27,7 @@ function inferProductionApiBaseUrl(hostname) {
 }
 
 export function resolveApiBaseUrl(configuredValue) {
-  const trimmedConfiguredValue = trimTrailingSlash(configuredValue);
+  const trimmedConfiguredValue = normalizeConfiguredUrl(configuredValue);
 
   if (typeof window === "undefined") {
     return trimmedConfiguredValue;
