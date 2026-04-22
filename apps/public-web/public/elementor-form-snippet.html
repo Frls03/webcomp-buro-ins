@@ -1,0 +1,447 @@
+<!-- Elementor HTML widget snippet: paste this entire block -->
+<div id="nexlum-form-root"></div>
+
+<style>
+  #nexlum-form-root {
+    --primary: #ef7d00;
+    --primary-strong: #bf5900;
+    --surface: #ffffff;
+    --surface-soft: #fff7ef;
+    --text-main: #2f3338;
+    --text-muted: #5f6873;
+    --border: #e8c7a5;
+    font-family: "Manrope", "Segoe UI", sans-serif;
+    color: var(--text-main);
+  }
+
+  #nexlum-form-root * {
+    box-sizing: border-box;
+  }
+
+  #nexlum-form-root .nx-card {
+    background: linear-gradient(165deg, rgba(255, 249, 242, 0.95), rgba(255, 255, 255, 0.98));
+    border: 1px solid #efd6be;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 14px 40px rgba(48, 52, 59, 0.12);
+  }
+
+  #nexlum-form-root h2 {
+    margin: 0 0 4px;
+    color: #ab4f00;
+  }
+
+  #nexlum-form-root .nx-subtitle {
+    margin: 0 0 14px;
+    color: var(--text-muted);
+  }
+
+  #nexlum-form-root form {
+    display: grid;
+    gap: 6px;
+  }
+
+  #nexlum-form-root label {
+    margin-top: 10px;
+    font-weight: 700;
+  }
+
+  #nexlum-form-root input,
+  #nexlum-form-root textarea,
+  #nexlum-form-root button {
+    font: inherit;
+  }
+
+  #nexlum-form-root input,
+  #nexlum-form-root textarea {
+    border: 1px solid #d8ba98;
+    border-radius: 10px;
+    padding: 11px 12px;
+    background: var(--surface);
+    width: 100%;
+  }
+
+  #nexlum-form-root input:focus,
+  #nexlum-form-root textarea:focus {
+    outline: 2px solid rgba(239, 125, 0, 0.28);
+    border-color: var(--primary);
+  }
+
+  #nexlum-form-root .nx-courses-grid {
+    margin-top: 4px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #nexlum-form-root .nx-day-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    background: var(--surface-soft);
+  }
+
+  #nexlum-form-root .nx-day-card h3 {
+    margin: 0 0 8px;
+    color: #9b5200;
+  }
+
+  #nexlum-form-root .nx-day-courses {
+    display: grid;
+    gap: 8px;
+  }
+
+  #nexlum-form-root .nx-course-option {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 8px;
+    align-items: center;
+    border: 1px solid #efddc8;
+    border-radius: 10px;
+    padding: 8px;
+    background: #fff;
+  }
+
+  #nexlum-form-root .nx-course-option.nx-selected {
+    border-color: #e89f57;
+    background: #fff0df;
+  }
+
+  #nexlum-form-root .nx-course-option input {
+    margin: 0;
+    grid-row: span 2;
+    width: auto;
+  }
+
+  #nexlum-form-root .nx-course-title {
+    font-weight: 700;
+  }
+
+  #nexlum-form-root .nx-course-time {
+    color: #686f79;
+    font-size: 13px;
+  }
+
+  #nexlum-form-root .nx-checkbox {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 12px;
+  }
+
+  #nexlum-form-root .nx-checkbox input {
+    width: auto;
+    margin-top: 3px;
+  }
+
+  #nexlum-form-root button {
+    margin-top: 12px;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 16px;
+    background: linear-gradient(120deg, var(--primary), var(--primary-strong));
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  #nexlum-form-root button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  #nexlum-form-root .nx-error {
+    margin: 2px 0 0;
+    color: #b42318;
+    font-size: 14px;
+  }
+
+  #nexlum-form-root .nx-hint {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  #nexlum-form-root .nx-success {
+    margin-top: 8px;
+    color: #ab4f00;
+    font-weight: 700;
+  }
+
+  @media (max-width: 720px) {
+    #nexlum-form-root .nx-courses-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script>
+  (function () {
+    const root = document.getElementById("nexlum-form-root");
+    if (!root) return;
+
+    const API_BASE_URL = "https://api.nexlum.site";
+    const TURNSTILE_SITE_KEY = "0x4AAAAAADAvJCcw0VmJP905";
+    const WEEK_DAYS = ["Lunes", "Martes", "Miercoles", "Jueves"];
+
+    root.innerHTML = `
+      <article class="nx-card">
+        <h2>Formulario de inscripcion</h2>
+        <p class="nx-subtitle">Completa tus datos para registrar tu participacion.</p>
+        <form id="nxRegistrationForm" novalidate>
+          <label for="nx-fullName">Nombre completo</label>
+          <input id="nx-fullName" name="fullName" required minlength="3" maxlength="120" />
+          <p class="nx-error" data-error-for="fullName"></p>
+
+          <label for="nx-email">Correo electronico</label>
+          <input id="nx-email" name="email" type="email" required maxlength="160" />
+          <p class="nx-error" data-error-for="email"></p>
+
+          <label for="nx-phone">Numero de telefono</label>
+          <input id="nx-phone" name="phone" required minlength="8" maxlength="30" />
+          <p class="nx-error" data-error-for="phone"></p>
+
+          <label for="nx-companyName">Empresa donde laboras</label>
+          <input id="nx-companyName" name="companyName" required minlength="2" maxlength="160" />
+          <p class="nx-error" data-error-for="companyName"></p>
+
+          <label for="nx-jobPosition">Puesto desempenado</label>
+          <input id="nx-jobPosition" name="jobPosition" required minlength="2" maxlength="120" />
+          <p class="nx-error" data-error-for="jobPosition"></p>
+
+          <label for="nx-academicDegree">Ultimo grado academico cursado</label>
+          <input id="nx-academicDegree" name="academicDegree" required minlength="2" maxlength="120" />
+          <p class="nx-error" data-error-for="academicDegree"></p>
+
+          <label for="nx-interests">Preferencias de estudio o temas de interes</label>
+          <textarea id="nx-interests" name="interests" rows="4" required minlength="3" maxlength="500"></textarea>
+          <p class="nx-error" data-error-for="interests"></p>
+
+          <label>Cursos disponibles (puedes elegir varios)</label>
+          <section id="nxCoursesGrid" class="nx-courses-grid"></section>
+          <p class="nx-error" data-error-for="courseIds"></p>
+
+          <div class="nx-checkbox">
+            <input id="nx-privacyAccepted" name="privacyAccepted" type="checkbox" />
+            <label for="nx-privacyAccepted">Acepto la politica de privacidad y el tratamiento de datos personales.</label>
+          </div>
+          <p class="nx-error" data-error-for="privacyAccepted"></p>
+
+          <div id="nxTurnstileContainer"></div>
+          <p class="nx-error" data-error-for="turnstileToken"></p>
+
+          <button id="nxSubmitButton" type="submit" disabled>Enviar inscripcion</button>
+          <p id="nxGlobalError" class="nx-error"></p>
+          <p id="nxSuccessMessage" class="nx-success"></p>
+        </form>
+      </article>
+    `;
+
+    const formEl = root.querySelector("#nxRegistrationForm");
+    const coursesGridEl = root.querySelector("#nxCoursesGrid");
+    const globalErrorEl = root.querySelector("#nxGlobalError");
+    const successEl = root.querySelector("#nxSuccessMessage");
+    const submitButtonEl = root.querySelector("#nxSubmitButton");
+    const selectedCourseIds = new Set();
+
+    let turnstileToken = "";
+    let turnstileWidgetId = null;
+
+    function normalizeDay(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    }
+
+    function setFieldError(field, message) {
+      const node = root.querySelector(`[data-error-for="${field}"]`);
+      if (node) node.textContent = message || "";
+    }
+
+    function clearErrors() {
+      globalErrorEl.textContent = "";
+      successEl.textContent = "";
+      ["fullName", "email", "phone", "companyName", "jobPosition", "academicDegree", "interests", "courseIds", "privacyAccepted", "turnstileToken"]
+        .forEach((field) => setFieldError(field, ""));
+    }
+
+    function updateSubmitState(isSubmitting) {
+      const canSubmit = selectedCourseIds.size > 0 && turnstileToken.length >= 10 && !isSubmitting;
+      submitButtonEl.disabled = !canSubmit;
+      submitButtonEl.textContent = isSubmitting ? "Enviando..." : "Enviar inscripcion";
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderCourses(items) {
+      const grouped = new Map(WEEK_DAYS.map((day) => [normalizeDay(day), []]));
+      items.forEach((course) => {
+        const dayKey = normalizeDay(course.day_of_week);
+        if (grouped.has(dayKey)) grouped.get(dayKey).push(course);
+      });
+
+      coursesGridEl.innerHTML = WEEK_DAYS.map((day) => {
+        const dayCourses = grouped.get(normalizeDay(day)) || [];
+        const inner = dayCourses.length
+          ? dayCourses.map((course) => `
+            <label class="nx-course-option" data-course-option="${course.id}">
+              <input type="checkbox" data-course-id="${course.id}" />
+              <span class="nx-course-title">${escapeHtml(course.title)}</span>
+              <span class="nx-course-time">${escapeHtml(course.schedule_label || "")}</span>
+            </label>
+          `).join("")
+          : "<p class=\"nx-hint\">Sin cursos configurados.</p>";
+        return `<article class="nx-day-card"><h3>${day}</h3><div class="nx-day-courses">${inner}</div></article>`;
+      }).join("");
+
+      coursesGridEl.querySelectorAll("input[data-course-id]").forEach((checkbox) => {
+        checkbox.addEventListener("change", (event) => {
+          const id = event.target.getAttribute("data-course-id");
+          const label = coursesGridEl.querySelector(`[data-course-option="${id}"]`);
+          if (event.target.checked) {
+            selectedCourseIds.add(id);
+            if (label) label.classList.add("nx-selected");
+          } else {
+            selectedCourseIds.delete(id);
+            if (label) label.classList.remove("nx-selected");
+          }
+          setFieldError("courseIds", "");
+          updateSubmitState(false);
+        });
+      });
+    }
+
+    async function fetchCourses() {
+      const response = await fetch(`${API_BASE_URL}/api/public/courses`, { method: "GET" });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "No se pudieron cargar los cursos.");
+      }
+      const data = await response.json();
+      renderCourses(data.courses || []);
+    }
+
+    function renderTurnstile() {
+      let retries = 0;
+      const timer = setInterval(() => {
+        if (window.turnstile && typeof window.turnstile.render === "function") {
+          clearInterval(timer);
+          turnstileWidgetId = window.turnstile.render(root.querySelector("#nxTurnstileContainer"), {
+            sitekey: TURNSTILE_SITE_KEY,
+            callback: function (token) {
+              turnstileToken = token || "";
+              setFieldError("turnstileToken", "");
+              updateSubmitState(false);
+            },
+            "expired-callback": function () {
+              turnstileToken = "";
+              setFieldError("turnstileToken", "Completa la verificacion de seguridad.");
+              updateSubmitState(false);
+            },
+            "error-callback": function () {
+              turnstileToken = "";
+              setFieldError("turnstileToken", "No se pudo validar captcha.");
+              updateSubmitState(false);
+            }
+          });
+        } else {
+          retries += 1;
+          if (retries > 60) {
+            clearInterval(timer);
+            setFieldError("turnstileToken", "No se pudo inicializar captcha.");
+          }
+        }
+      }, 200);
+    }
+
+    function readPayload() {
+      return {
+        fullName: formEl.fullName.value.trim(),
+        email: formEl.email.value.trim(),
+        phone: formEl.phone.value.trim(),
+        companyName: formEl.companyName.value.trim(),
+        jobPosition: formEl.jobPosition.value.trim(),
+        academicDegree: formEl.academicDegree.value.trim(),
+        interests: formEl.interests.value.trim(),
+        courseIds: Array.from(selectedCourseIds),
+        privacyAccepted: Boolean(formEl.privacyAccepted.checked),
+        turnstileToken
+      };
+    }
+
+    function validatePayload(payload) {
+      const errors = {};
+      if (payload.fullName.length < 3) errors.fullName = "Ingresa un nombre valido.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.email = "Ingresa un correo valido.";
+      if (payload.phone.length < 8) errors.phone = "Ingresa un telefono valido.";
+      if (payload.companyName.length < 2) errors.companyName = "Ingresa la empresa donde laboras.";
+      if (payload.jobPosition.length < 2) errors.jobPosition = "Ingresa el puesto que desempenas.";
+      if (payload.academicDegree.length < 2) errors.academicDegree = "Ingresa tu ultimo grado academico.";
+      if (payload.interests.length < 3) errors.interests = "Describe tus intereses de estudio.";
+      if (payload.courseIds.length < 1) errors.courseIds = "Selecciona al menos un curso.";
+      if (!payload.privacyAccepted) errors.privacyAccepted = "Debes aceptar la politica de privacidad.";
+      if (payload.turnstileToken.length < 10) errors.turnstileToken = "Completa la verificacion de seguridad.";
+      return errors;
+    }
+
+    async function submitRegistration(payload) {
+      const response = await fetch(`${API_BASE_URL}/api/public/inscriptions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo enviar la inscripcion.");
+      }
+    }
+
+    formEl.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      clearErrors();
+
+      const payload = readPayload();
+      const errors = validatePayload(payload);
+      if (Object.keys(errors).length > 0) {
+        Object.keys(errors).forEach((key) => setFieldError(key, errors[key]));
+        return;
+      }
+
+      updateSubmitState(true);
+      try {
+        await submitRegistration(payload);
+        successEl.textContent = "Tu inscripcion fue realizada exitosamente.";
+        formEl.reset();
+        selectedCourseIds.clear();
+        coursesGridEl.querySelectorAll("[data-course-option]").forEach((node) => node.classList.remove("nx-selected"));
+        turnstileToken = "";
+        if (window.turnstile && turnstileWidgetId !== null) {
+          window.turnstile.reset(turnstileWidgetId);
+        }
+      } catch (error) {
+        globalErrorEl.textContent = error.message || "Error al enviar la inscripcion.";
+      } finally {
+        updateSubmitState(false);
+      }
+    });
+
+    (async function boot() {
+      try {
+        await fetchCourses();
+      } catch (error) {
+        globalErrorEl.textContent = error.message || "No se pudieron cargar los cursos.";
+      }
+      renderTurnstile();
+      updateSubmitState(false);
+    })();
+  })();
+</script>

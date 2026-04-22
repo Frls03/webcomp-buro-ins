@@ -7,14 +7,15 @@ export default async function handler(req, res) {
   if (req.method !== "GET") return methodNotAllowed(res);
 
   try {
-    // Prevent 304 responses without CORS headers when browsers send If-None-Match.
-    // We force fresh JSON responses for this public endpoint.
+    // Prevent 304 CORS issues on conditional requests.
+    // Some runtimes can still generate 304 from If-None-Match, so force a unique ETag.
     if (req.headers["if-none-match"]) {
-      delete req.headers["if-none-match"];
+      req.headers["if-none-match"] = "";
     }
     res.setHeader("Cache-Control", "no-store, max-age=0");
     res.setHeader("CDN-Cache-Control", "no-store");
     res.setHeader("Vercel-CDN-Cache-Control", "no-store");
+    res.setHeader("ETag", `"courses-${Date.now()}"`);
 
     const { data, error } = await supabaseAdmin
       .from("courses")
