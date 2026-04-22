@@ -32,6 +32,13 @@ function isAllowed(origin, zone) {
 
 export function withCors(req, res, zone) {
   const origin = req.headers.origin || "";
+
+  // Requests without Origin are not browser CORS requests (e.g. direct URL, curl, server-side).
+  // Allow them and skip CORS headers.
+  if (!origin) {
+    return true;
+  }
+
   if (!isAllowed(origin, zone)) {
     res.status(403).json({ error: "Origin no permitido" });
     return false;
