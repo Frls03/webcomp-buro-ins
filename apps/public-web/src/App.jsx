@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { registrationSchema } from "@buro-ins/shared/src/validation.js";
 import { fetchCourses, submitRegistration } from "./lib/api.js";
 import TurnstileWidget from "./components/TurnstileWidget.jsx";
@@ -44,6 +44,8 @@ function postEmbedHeight() {
 }
 
 export default function App() {
+  const shellRef = useRef(null);
+  const lastReportedHeightRef = useRef(0);
   const [form, setForm] = useState(initialForm);
   const [courses, setCourses] = useState([]);
   const [errors, setErrors] = useState({});
@@ -79,27 +81,31 @@ export default function App() {
     if (typeof window === "undefined") return undefined;
 
     const schedule = () => {
-      window.requestAnimationFrame(() => postEmbedHeight());
+      window.requestAnimationFrame(() => {
+        const bodyHeight = document.body ? document.body.scrollHeight : 0;
+        const docHeight = document.documentElement ? document.documentElement.scrollHeight : 0;
+        const height = Math.max(bodyHeight, docHeight);
+
+        if (height > 0 && height !== lastReportedHeightRef.current) {
+          lastReportedHeightRef.current = height;
+          postEmbedHeight();
+        }
+      });
     };
 
     schedule();
 
-    let observer;
-    if (typeof MutationObserver !== "undefined" && document.body) {
-      observer = new MutationObserver(schedule);
-      observer.observe(document.body, {
-        subtree: true,
-        childList: true,
-        attributes: true,
-        characterData: true
-      });
+    let resizeObserver;
+    if (typeof ResizeObserver !== "undefined" && shellRef.current) {
+      resizeObserver = new ResizeObserver(schedule);
+      resizeObserver.observe(shellRef.current);
     }
 
     window.addEventListener("resize", schedule);
 
     return () => {
       window.removeEventListener("resize", schedule);
-      if (observer) observer.disconnect();
+      if (resizeObserver) resizeObserver.disconnect();
     };
   }, []);
 
@@ -137,6 +143,11 @@ export default function App() {
       [name]: type === "checkbox" ? checked : value
     }));
     setErrors((prev) => ({ ...prev, [name]: undefined, global: undefined }));
+  }, []);
+
+  const handleTurnstileToken = useCallback((token) => {
+    setForm((prev) => ({ ...prev, turnstileToken: token }));
+    setErrors((prev) => ({ ...prev, turnstileToken: undefined, global: undefined }));
   }, []);
 
   const toggleCourse = useCallback((courseId) => {
@@ -199,7 +210,7 @@ export default function App() {
 
   return (
     <main className="layout">
-      <section className="shell" aria-live="polite">
+      <section ref={shellRef} className="shell" aria-live="polite">
         <header className="topbar">
           <img
             className="topbar-banner"
@@ -295,10 +306,7 @@ export default function App() {
             {isTurnstileConfigured ? (
               <TurnstileWidget
                 siteKey={turnstileSiteKey}
-                onToken={(token) => {
-                  setForm((prev) => ({ ...prev, turnstileToken: token }));
-                  setErrors((prev) => ({ ...prev, turnstileToken: undefined, global: undefined }));
-                }}
+                onToken={handleTurnstileToken}
                 resetSignal={captchaResetSignal}
               />
             ) : (
