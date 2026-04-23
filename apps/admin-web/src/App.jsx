@@ -33,8 +33,20 @@ const initialCreateForm = {
   academicDegree: "",
   interests: "",
   courseIds: [],
-  status: "pending"
+  status: "Pendiente"
 };
+
+
+function toStatusClassName(status) {
+  const normalized = String(status || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return normalized ? `status-${normalized}` : "status-unknown";
+}
 
 function formatCourseLabel(course) {
   const prefix = [course.day_of_week, course.schedule_label].filter(Boolean).join(" ");
@@ -50,6 +62,71 @@ function getCourseLines(selected) {
   }
   return [];
 }
+
+function friendlySaveErrorMessage(rawMessage) {
+  const message = String(rawMessage || "").trim();
+  const normalized = message.toLowerCase();
+
+  if (!message) {
+    return "No se pudo guardar el cambio. Intenta de nuevo.";
+  }
+
+  if (normalized.includes("validation error") && normalized.includes("enum")) {
+    return "Revisa el campo Estado. El valor seleccionado no es válido.";
+  }
+  if (normalized.includes("validation error") && normalized.includes("status")) {
+    return "Revisa el campo Estado antes de guardar.";
+  }
+  if (
+    normalized.includes("validation error") &&
+    (normalized.includes("internalnote") || normalized.includes("max") || normalized.includes("at most"))
+  ) {
+    return "Revisa la Nueva nota interna. Parece demasiado larga.";
+  }
+  if (normalized.includes("no autenticado") || normalized.includes("token")) {
+    return "Tu sesión ya no es válida. Cierra sesión y vuelve a ingresar.";
+  }
+  if (normalized.includes("no autorizado") || normalized.includes("forbidden")) {
+    return "No tienes permiso para cambiar este registro.";
+  }
+  if (normalized.includes("registro no encontrado")) {
+    return "No encontramos ese registro. Recarga la lista e intenta otra vez.";
+  }
+  if (normalized.includes("failed to fetch") || normalized.includes("no hay conexion")) {
+    return "No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.";
+  }
+  if (normalized.includes("error interno")) {
+    return "Ocurrió un problema en el servidor al guardar. Intenta nuevamente en unos minutos.";
+  }
+
+  return message;
+}
+
+function friendlyCreateErrorMessage(rawMessage) {
+  const message = String(rawMessage || "").trim();
+  const normalized = message.toLowerCase();
+
+  if (!message) return "No se pudo crear el registro. Intenta de nuevo.";
+  if (normalized.includes("ya existe un registro")) return "Ya existe un registro con ese correo y cursos.";
+  if (normalized.includes("datos invalid")) return "Revisa los datos ingresados antes de crear el registro.";
+  if (normalized.includes("no autorizado") || normalized.includes("forbidden")) return "No tienes permiso para crear registros.";
+  if (normalized.includes("failed to fetch") || normalized.includes("no hay conexion")) return "No se pudo conectar con el servidor. Intenta de nuevo.";
+  if (normalized.includes("error interno")) return "El servidor tuvo un problema al crear el registro. Intenta nuevamente.";
+  return message;
+}
+
+function friendlyDeleteErrorMessage(rawMessage) {
+  const message = String(rawMessage || "").trim();
+  const normalized = message.toLowerCase();
+
+  if (!message) return "No se pudo eliminar el registro. Intenta de nuevo.";
+  if (normalized.includes("no autorizado") || normalized.includes("forbidden")) return "No tienes permiso para eliminar registros.";
+  if (normalized.includes("failed to fetch") || normalized.includes("no hay conexion")) return "No se pudo conectar con el servidor. Intenta de nuevo.";
+  if (normalized.includes("registro no encontrado")) return "No encontramos ese registro para eliminar.";
+  if (normalized.includes("error interno")) return "El servidor tuvo un problema al eliminar el registro. Intenta nuevamente.";
+  return message;
+}
+
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -78,6 +155,8 @@ export default function App() {
   const [realtimeMessage, setRealtimeMessage] = useState("");
   const [unreadRealtimeCount, setUnreadRealtimeCount] = useState(0);
   const [isRealtimeToastVisible, setIsRealtimeToastVisible] = useState(false);
+  const [actionToast, setActionToast] = useState({ visible: false, type: "success", message: "" });
+  const [detailFormErrors, setDetailFormErrors] = useState({ status: "", internalNote: "" });
   const [notificationPermission, setNotificationPermission] = useState(
     typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported"
   );
@@ -178,6 +257,14 @@ export default function App() {
     }
   }
 
+  function showActionToast(type, message) {
+    setActionToast({
+      visible: true,
+      type: type === "error" ? "error" : "success",
+      message: String(message || "")
+    });
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session || null));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
@@ -193,6 +280,14 @@ export default function App() {
     }, 7000);
     return () => window.clearTimeout(timeoutId);
   }, [isRealtimeToastVisible, realtimeMessage]);
+
+  useEffect(() => {
+    if (!actionToast.visible) return undefined;
+    const timeoutId = window.setTimeout(() => {
+      setActionToast((prev) => ({ ...prev, visible: false }));
+    }, 4500);
+    return () => window.clearTimeout(timeoutId);
+  }, [actionToast.visible, actionToast.message]);
 
   const token = session?.access_token;
 
@@ -305,6 +400,7 @@ export default function App() {
     try {
       const data = await getRecordById(token, id);
       setSelected(data.item);
+      setDetailFormErrors({ status: "", internalNote: "" });
       setIsDetailOpen(true);
     } catch (error) {
       setScreenError(error.message);
@@ -315,27 +411,42 @@ export default function App() {
 
   function closeDetail() {
     setIsDetailOpen(false);
+    setDetailFormErrors({ status: "", internalNote: "" });
   }
 
   async function saveDetail() {
     if (!token || !selected) return;
 
-    if (!permissions.update && !permissions.note) {
-      setScreenError("No tienes permisos para editar este registro.");
+    if (!permissions.update) {
+      const message = "Solo el rol manager puede modificar este registro.";
+      setScreenError(message);
+      showActionToast("error", message);
       return;
     }
 
-    if (!permissions.update && permissions.note && !(selected.newNote || "").trim()) {
-      setScreenError("Debes ingresar una nota para guardar.");
-      return;
-    }
+    setDetailFormErrors({ status: "", internalNote: "" });
+    setScreenError("");
 
     const parsed = adminUpdateSchema.safeParse({
       status: selected.status,
       internalNote: selected.newNote || ""
     });
     if (!parsed.success) {
-      setScreenError("Datos invalidos en estado o nota.");
+      let statusError = "";
+      let internalNoteError = "";
+      for (const issue of parsed.error.issues || []) {
+        const path = issue.path?.[0];
+        if (path === "status") {
+          statusError = "Revisa el campo Estado. El valor seleccionado no es válido.";
+        }
+        if (path === "internalNote") {
+          internalNoteError = "Revisa la Nueva nota interna. Parece demasiado larga.";
+        }
+      }
+      const message = statusError || internalNoteError || "Revisa los campos antes de guardar.";
+      setDetailFormErrors({ status: statusError, internalNote: internalNoteError });
+      setScreenError(message);
+      showActionToast("error", message);
       return;
     }
 
@@ -343,9 +454,13 @@ export default function App() {
     try {
       await updateRecord(token, selected.id, parsed.data);
       setScreenError("");
+      setDetailFormErrors({ status: "", internalNote: "" });
+      showActionToast("success", "Cambio guardado con éxito.");
       await loadRecords();
     } catch (error) {
-      setScreenError(error.message);
+      const message = friendlySaveErrorMessage(error?.message || "");
+      setScreenError(message);
+      showActionToast("error", message);
     } finally {
       setSaving(false);
     }
@@ -363,8 +478,12 @@ export default function App() {
       setIsDetailOpen(false);
       setSelected(null);
       await loadRecords();
+      setScreenError("");
+      showActionToast("success", "Registro eliminado con exito.");
     } catch (error) {
-      setScreenError(error.message);
+      const message = friendlyDeleteErrorMessage(error?.message || "");
+      setScreenError(message);
+      showActionToast("error", message);
     } finally {
       setSaving(false);
     }
@@ -385,7 +504,9 @@ export default function App() {
     if (!token || !permissions.create) return;
 
     if (!createForm.courseIds.length) {
-      setCreateError("Debes seleccionar al menos un curso.");
+      const message = "Debes seleccionar al menos un curso.";
+      setCreateError(message);
+      showActionToast("error", message);
       return;
     }
 
@@ -396,8 +517,12 @@ export default function App() {
       setIsCreateOpen(false);
       setCreateForm(initialCreateForm);
       await loadRecords();
+      setScreenError("");
+      showActionToast("success", "Registro creado con exito.");
     } catch (error) {
-      setCreateError(error.message);
+      const message = friendlyCreateErrorMessage(error?.message || "");
+      setCreateError(message);
+      showActionToast("error", message);
     } finally {
       setCreating(false);
     }
@@ -536,6 +661,18 @@ export default function App() {
           </button>
         </aside>
       )}
+      {actionToast.visible && (
+        <aside className={`floating-toast action-toast toast-${actionToast.type}`} role="status" aria-live="polite">
+          <p>{actionToast.message}</p>
+          <button
+            type="button"
+            className="ghost"
+            onClick={() => setActionToast((prev) => ({ ...prev, visible: false }))}
+          >
+            Cerrar
+          </button>
+        </aside>
+      )}
       {screenError && <p className="error">{screenError}</p>}
 
       <section className="content-grid">
@@ -577,7 +714,7 @@ export default function App() {
                       : (row.course_title || "Sin cursos")}
                   </td>
                   <td>
-                    <span className={`status-pill ${row.status}`}>{row.status}</span>
+                    <span className={`status-pill ${toStatusClassName(row.status)}`}>{row.status}</span>
                   </td>
                   <td>
                     <button type="button" className="table-action" onClick={() => openDetail(row.id)}>
@@ -651,6 +788,7 @@ export default function App() {
                         <option key={status} value={status}>{status}</option>
                       ))}
                     </select>
+                    {detailFormErrors.status && <p className="field-error">{detailFormErrors.status}</p>}
                   </div>
 
                   <div className="field-block">
@@ -659,8 +797,10 @@ export default function App() {
                       id="note"
                       rows={4}
                       value={selected.newNote || ""}
+                      disabled={!permissions.update}
                       onChange={(event) => setSelected((prev) => ({ ...prev, newNote: event.target.value }))}
                     />
+                    {detailFormErrors.internalNote && <p className="field-error">{detailFormErrors.internalNote}</p>}
                   </div>
                 </div>
 
@@ -671,7 +811,7 @@ export default function App() {
                       Eliminar
                     </button>
                   )}
-                  <button type="button" onClick={saveDetail} disabled={saving || (!permissions.update && !permissions.note)}>
+                  <button type="button" onClick={saveDetail} disabled={saving || !permissions.update}>
                     {saving ? "Guardando..." : "Guardar cambios"}
                   </button>
                 </div>

@@ -101,3 +101,15 @@ export async function exportCsv(token, params) {
 
   return response.blob();
 }
+
+export async function sendSmtpTest(token, payload) {
+  const response = await requestWithRetry(`${ADMIN_API_BASE_URL}/api/admin/smtp/test`, {
+    method: "POST",
+    headers: buildAuthHeaders(token, true),
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "No se pudo enviar el correo de prueba");
+  return data;
+}

@@ -20,7 +20,7 @@ const createRegistrationSchema = z.object({
   academicDegree: z.string().min(2).max(120).transform(sanitizeText),
   interests: z.string().min(3).max(500).transform(sanitizeText),
   courseIds: z.array(z.string().uuid()).min(1).max(8),
-  status: z.enum(REGISTRATION_STATUSES).default("pending")
+  status: z.enum(REGISTRATION_STATUSES).default("Pendiente")
 });
 
 function getSelectedCourseIds(row) {

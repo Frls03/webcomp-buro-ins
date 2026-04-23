@@ -44,9 +44,16 @@ function buildWelcomeText({ fullName, courses }) {
 }
 
 function getMissingConfigKeys() {
+  const mode = String(env.smtpAuthMode || "password").trim().toLowerCase();
   const missing = [];
   if (!env.smtpUser) missing.push("SMTP_USER");
-  if (!env.smtpPass) missing.push("SMTP_PASS");
+  if (mode === "gmail_oauth2") {
+    if (!env.googleClientId) missing.push("GOOGLE_CLIENT_ID");
+    if (!env.googleClientSecret) missing.push("GOOGLE_CLIENT_SECRET");
+    if (!env.googleRefreshToken) missing.push("GOOGLE_REFRESH_TOKEN");
+  } else {
+    if (!env.smtpPass) missing.push("SMTP_PASS");
+  }
   return missing;
 }
 
@@ -70,15 +77,29 @@ let transporter;
 function getTransporter() {
   if (transporter) return transporter;
 
-  transporter = nodemailer.createTransport({
-    host: env.smtpHost,
-    port: Number(env.smtpPort || 465),
-    secure: normalizeBoolean(env.smtpSecure),
-    auth: {
-      user: env.smtpUser,
-      pass: env.smtpPass
-    }
-  });
+  const mode = String(env.smtpAuthMode || "password").trim().toLowerCase();
+  if (mode === "gmail_oauth2") {
+    transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: env.smtpUser,
+        clientId: env.googleClientId,
+        clientSecret: env.googleClientSecret,
+        refreshToken: env.googleRefreshToken
+      }
+    });
+  } else {
+    transporter = nodemailer.createTransport({
+      host: env.smtpHost,
+      port: Number(env.smtpPort || 465),
+      secure: normalizeBoolean(env.smtpSecure),
+      auth: {
+        user: env.smtpUser,
+        pass: env.smtpPass
+      }
+    });
+  }
 
   return transporter;
 }

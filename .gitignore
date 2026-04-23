@@ -18,6 +18,11 @@ dist-ssr
 .vercel
 .turbo
 
+#html
+elementor-form-snippet.html
+elementor-iframe-backup.html
+standalone-form.html
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

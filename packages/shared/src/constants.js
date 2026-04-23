@@ -1,9 +1,9 @@
 export const REGISTRATION_STATUSES = [
-  "pending",
-  "reviewed",
-  "accepted",
-  "rejected",
-  "waitlist"
+  "Pendiente",
+  "Aceptado",
+  "Correo enviado",
+  "Link Enviado",
+  "Llamada realizada"
 ];
 
 export const ADMIN_ROLES = ["viewer", "noter", "editor", "manager"];

@@ -5,6 +5,7 @@ import inscriptionsHandler from "./api/public/inscriptions.js";
 import recordsHandler from "./api/admin/records/index.js";
 import recordByIdHandler from "./api/admin/records/[id].js";
 import exportHandler from "./api/admin/export.js";
+import smtpTestHandler from "./api/admin/smtp/test.js";
 import { withCors } from "./lib/cors.js";
 
 const app = express();
@@ -40,6 +41,7 @@ app.delete("/api/admin/records/:id", (req, res) => {
   return recordByIdHandler(req, res);
 });
 app.get("/api/admin/export", (req, res) => exportHandler(req, res));
+app.post("/api/admin/smtp/test", (req, res) => smtpTestHandler(req, res));
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ ok: true, service: "api-service" });

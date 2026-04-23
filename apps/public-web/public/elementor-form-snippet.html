@@ -182,29 +182,29 @@
     if (!root) return;
 
     const API_BASE_URL = "https://api.nexlum.site";
-    const TURNSTILE_SITE_KEY = "0x4AAAAAADAvJCcw0VmJP905";
-    const WEEK_DAYS = ["Lunes", "Martes", "Miercoles", "Jueves"];
+    const TURNSTILE_SITE_KEY = "0x4AAAAAADBYgqT7dn9f56o-";
+    const WEEK_DAYS = ["Lunes", "Martes", "Mi\u00e9rcoles", "Jueves"];
     const DAY_DATE_LABELS = {
       Lunes: "25 de mayo",
       Martes: "26 de mayo",
-      Miercoles: "27 de mayo",
+      ["Mi\u00e9rcoles"]: "27 de mayo",
       Jueves: "28 de mayo"
     };
 
     root.innerHTML = `
       <article class="nx-card">
-        <h2>Formulario de inscripcion</h2>
-        <p class="nx-subtitle">Completa tus datos para registrar tu participacion.</p>
+        <h2>Formulario de inscripci&oacute;n</h2>
+        <p class="nx-subtitle">Completa tus datos para registrar tu participaci&oacute;n.</p>
         <form id="nxRegistrationForm" novalidate>
           <label for="nx-fullName">Nombre completo</label>
           <input id="nx-fullName" name="fullName" required minlength="3" maxlength="120" />
           <p class="nx-error" data-error-for="fullName"></p>
 
-          <label for="nx-email">Correo electronico</label>
+          <label for="nx-email">Correo electr&oacute;nico</label>
           <input id="nx-email" name="email" type="email" required maxlength="160" />
           <p class="nx-error" data-error-for="email"></p>
 
-          <label for="nx-phone">Numero de telefono</label>
+          <label for="nx-phone">N&uacute;mero de tel&eacute;fono</label>
           <input id="nx-phone" name="phone" required minlength="8" maxlength="30" />
           <p class="nx-error" data-error-for="phone"></p>
 
@@ -212,15 +212,15 @@
           <input id="nx-companyName" name="companyName" required minlength="2" maxlength="160" />
           <p class="nx-error" data-error-for="companyName"></p>
 
-          <label for="nx-jobPosition">Puesto desempenado</label>
+          <label for="nx-jobPosition">Puesto desempe&ntilde;ado</label>
           <input id="nx-jobPosition" name="jobPosition" required minlength="2" maxlength="120" />
           <p class="nx-error" data-error-for="jobPosition"></p>
 
-          <label for="nx-academicDegree">Ultimo grado academico cursado</label>
+          <label for="nx-academicDegree">&Uacute;ltimo grado acad&eacute;mico cursado</label>
           <input id="nx-academicDegree" name="academicDegree" required minlength="2" maxlength="120" />
           <p class="nx-error" data-error-for="academicDegree"></p>
 
-          <label for="nx-interests">Preferencias de estudio o temas de interes</label>
+          <label for="nx-interests">Preferencias de estudio o temas de inter&eacute;s</label>
           <textarea id="nx-interests" name="interests" rows="4" required minlength="3" maxlength="500"></textarea>
           <p class="nx-error" data-error-for="interests"></p>
 
@@ -230,14 +230,14 @@
 
           <div class="nx-checkbox">
             <input id="nx-privacyAccepted" name="privacyAccepted" type="checkbox" />
-            <label for="nx-privacyAccepted">Acepto la politica de privacidad y el tratamiento de datos personales.</label>
+            <label for="nx-privacyAccepted">Acepto la pol&iacute;tica de privacidad y el tratamiento de datos personales.</label>
           </div>
           <p class="nx-error" data-error-for="privacyAccepted"></p>
 
           <div id="nxTurnstileContainer"></div>
           <p class="nx-error" data-error-for="turnstileToken"></p>
 
-          <button id="nxSubmitButton" type="submit" disabled>Enviar inscripcion</button>
+          <button id="nxSubmitButton" type="submit" disabled>Enviar inscripci&oacute;n</button>
           <p id="nxGlobalError" class="nx-error"></p>
           <p id="nxSuccessMessage" class="nx-success"></p>
         </form>
@@ -281,7 +281,7 @@
     function updateSubmitState(isSubmitting) {
       const canSubmit = selectedCourseIds.size > 0 && turnstileToken.length >= 10 && !isSubmitting;
       submitButtonEl.disabled = !canSubmit;
-      submitButtonEl.textContent = isSubmitting ? "Enviando..." : "Enviar inscripcion";
+      submitButtonEl.textContent = isSubmitting ? "Enviando..." : "Enviar inscripci\u00f3n";
     }
 
     function escapeHtml(value) {
@@ -355,7 +355,7 @@
             },
             "expired-callback": function () {
               turnstileToken = "";
-              setFieldError("turnstileToken", "Completa la verificacion de seguridad.");
+              setFieldError("turnstileToken", "Completa la verificaci\u00f3n de seguridad.");
               updateSubmitState(false);
             },
             "error-callback": function () {
@@ -391,16 +391,16 @@
 
     function validatePayload(payload) {
       const errors = {};
-      if (payload.fullName.length < 3) errors.fullName = "Ingresa un nombre valido.";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.email = "Ingresa un correo valido.";
-      if (payload.phone.length < 8) errors.phone = "Ingresa un telefono valido.";
+      if (payload.fullName.length < 3) errors.fullName = "Ingresa un nombre v\u00e1lido.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.email = "Ingresa un correo v\u00e1lido.";
+      if (payload.phone.length < 8) errors.phone = "Ingresa un tel\u00e9fono v\u00e1lido.";
       if (payload.companyName.length < 2) errors.companyName = "Ingresa la empresa donde laboras.";
-      if (payload.jobPosition.length < 2) errors.jobPosition = "Ingresa el puesto que desempenas.";
-      if (payload.academicDegree.length < 2) errors.academicDegree = "Ingresa tu ultimo grado academico.";
+      if (payload.jobPosition.length < 2) errors.jobPosition = "Ingresa el puesto que desempe\u00f1as.";
+      if (payload.academicDegree.length < 2) errors.academicDegree = "Ingresa tu \u00faltimo grado acad\u00e9mico.";
       if (payload.interests.length < 3) errors.interests = "Describe tus intereses de estudio.";
       if (payload.courseIds.length < 1) errors.courseIds = "Selecciona al menos un curso.";
-      if (!payload.privacyAccepted) errors.privacyAccepted = "Debes aceptar la politica de privacidad.";
-      if (payload.turnstileToken.length < 10) errors.turnstileToken = "Completa la verificacion de seguridad.";
+      if (!payload.privacyAccepted) errors.privacyAccepted = "Debes aceptar la pol\u00edtica de privacidad.";
+      if (payload.turnstileToken.length < 10) errors.turnstileToken = "Completa la verificaci\u00f3n de seguridad.";
       return errors;
     }
 
@@ -412,7 +412,7 @@
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(data.error || "No se pudo enviar la inscripcion.");
+        throw new Error(data.error || "No se pudo enviar la inscripci\u00f3n.");
       }
     }
 
@@ -430,7 +430,7 @@
       updateSubmitState(true);
       try {
         await submitRegistration(payload);
-        successEl.textContent = "Tu inscripcion fue realizada exitosamente.";
+        successEl.textContent = "Tu inscripci\u00f3n fue realizada exitosamente.";
         formEl.reset();
         selectedCourseIds.clear();
         coursesGridEl.querySelectorAll("[data-course-option]").forEach((node) => node.classList.remove("nx-selected"));
@@ -439,7 +439,7 @@
           window.turnstile.reset(turnstileWidgetId);
         }
       } catch (error) {
-        globalErrorEl.textContent = error.message || "Error al enviar la inscripcion.";
+        globalErrorEl.textContent = error.message || "Error al enviar la inscripci\u00f3n.";
       } finally {
         updateSubmitState(false);
       }

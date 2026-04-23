@@ -18,7 +18,7 @@ const rolePermissions = {
   },
   noter: {
     read: true,
-    note: true,
+    note: false,
     update: false,
     create: false,
     remove: false,

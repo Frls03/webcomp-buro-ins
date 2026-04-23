@@ -94,9 +94,7 @@ export default async function handler(req, res) {
 
     if (req.method === "PATCH") {
       const canUpdate = canAccess(authResult.profile, "update");
-      const canNote = canAccess(authResult.profile, "note");
-
-      if (!canUpdate && !canNote) return forbidden(res);
+      if (!canUpdate) return forbidden(res);
 
       const { data: currentRegistration, error: currentError } = await supabaseAdmin
         .from("registrations")
@@ -110,23 +108,11 @@ export default async function handler(req, res) {
 
       const payload = parseOrThrow(adminUpdateSchema, req.body || {});
 
-      const wantsStatusChange = payload.status !== currentRegistration.status;
-
-      if (wantsStatusChange && !canUpdate) {
-        return forbidden(res);
-      }
-
-      if (!canUpdate && (!payload.internalNote || !payload.internalNote.trim())) {
-        return badRequest(res, "Debes ingresar una nota para guardar cambios.");
-      }
-
-      if (canUpdate) {
-        const { error: updateError } = await supabaseAdmin
-          .from("registrations")
-          .update({ status: payload.status, updated_at: new Date().toISOString() })
-          .eq("id", registrationId);
-        if (updateError) throw updateError;
-      }
+      const { error: updateError } = await supabaseAdmin
+        .from("registrations")
+        .update({ status: payload.status, updated_at: new Date().toISOString() })
+        .eq("id", registrationId);
+      if (updateError) throw updateError;
 
       if (payload.internalNote) {
         const { error: noteError } = await supabaseAdmin.from("registration_notes").insert({
@@ -140,13 +126,13 @@ export default async function handler(req, res) {
 
       const { error: auditError } = await supabaseAdmin.from("audit_logs").insert({
         actor_profile_id: authResult.profile.id,
-        action: canUpdate ? "registration.update" : "registration.note_add",
+        action: "registration.update",
         target_table: "registrations",
         target_id: registrationId,
         metadata: {
           actor_email: authResult.user.email,
           actor_name: authResult.profile.display_name || null,
-          status: canUpdate ? payload.status : currentRegistration.status,
+          status: payload.status,
           has_note: Boolean(payload.internalNote)
         }
       });
