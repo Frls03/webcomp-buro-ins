@@ -2,7 +2,8 @@ import { env } from "./env.js";
 import nodemailer from "nodemailer";
 
 function normalizeBoolean(value) {
-  return String(value || "").toLowerCase() === "true";
+  const normalized = String(value || "").trim().toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
 }
 
 function formatCourseLine(course) {
@@ -42,8 +43,19 @@ function buildWelcomeText({ fullName, courses }) {
   ].join("\n");
 }
 
+function getMissingConfigKeys() {
+  const missing = [];
+  if (!env.smtpUser) missing.push("SMTP_USER");
+  if (!env.smtpPass) missing.push("SMTP_PASS");
+  return missing;
+}
+
+function resolveFromAddress() {
+  return env.welcomeEmailFrom || env.smtpUser;
+}
+
 export function isWelcomeEmailEnabled() {
-  return normalizeBoolean(env.welcomeEmailEnabled) && Boolean(env.smtpUser && env.smtpPass && env.welcomeEmailFrom);
+  return normalizeBoolean(env.welcomeEmailEnabled) && getMissingConfigKeys().length === 0;
 }
 
 function parseOptionalList(value) {
@@ -72,10 +84,18 @@ function getTransporter() {
 }
 
 export async function sendWelcomeEmail({ to, fullName, courses }) {
-  if (!isWelcomeEmailEnabled()) return;
+  if (!isWelcomeEmailEnabled()) {
+    const enabledFlag = normalizeBoolean(env.welcomeEmailEnabled);
+    const missing = getMissingConfigKeys();
+    console.warn("Welcome email skipped: disabled or incomplete config", {
+      enabledFlag,
+      missing
+    });
+    return;
+  }
 
   const mail = {
-    from: env.welcomeEmailFrom,
+    from: resolveFromAddress(),
     to: [to],
     cc: parseOptionalList(env.welcomeEmailCc),
     replyTo: env.welcomeEmailReplyTo || undefined,
@@ -84,5 +104,11 @@ export async function sendWelcomeEmail({ to, fullName, courses }) {
     text: buildWelcomeText({ fullName, courses })
   };
 
-  await getTransporter().sendMail(mail);
+  const info = await getTransporter().sendMail(mail);
+  console.log("Welcome email sent", {
+    to,
+    messageId: info?.messageId || null,
+    accepted: info?.accepted || [],
+    rejected: info?.rejected || []
+  });
 }
