@@ -250,6 +250,12 @@
         const API_BASE_URL = "https://api.nexlum.site";
         const TURNSTILE_SITE_KEY = "0x4AAAAAADAvJCcw0VmJP905";
         const WEEK_DAYS = ["Lunes", "Martes", "Miercoles", "Jueves"];
+        const DAY_DATE_LABELS = {
+          Lunes: "25 de mayo",
+          Martes: "26 de mayo",
+          Miercoles: "27 de mayo",
+          Jueves: "28 de mayo"
+        };
 
         const formEl = document.getElementById("registrationForm");
         const coursesGridEl = document.getElementById("coursesGrid");
@@ -267,6 +273,11 @@
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
+        }
+
+        function formatDayHeading(day) {
+          const dateLabel = DAY_DATE_LABELS[day];
+          return dateLabel ? `${day} - ${dateLabel}` : day;
         }
 
         function setFieldError(field, message) {
@@ -314,7 +325,7 @@
                 </label>
               `).join("")
               : "<p class=\"hint\">Sin cursos configurados.</p>";
-            return `<article class="day-card"><h3>${day}</h3><div class="day-courses">${inner}</div></article>`;
+            return `<article class="day-card"><h3>${formatDayHeading(day)}</h3><div class="day-courses">${inner}</div></article>`;
           }).join("");
 
           coursesGridEl.querySelectorAll("input[data-course-id]").forEach((checkbox) => {

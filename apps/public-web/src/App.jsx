@@ -4,6 +4,17 @@ import { fetchCourses, submitRegistration } from "./lib/api.js";
 import TurnstileWidget from "./components/TurnstileWidget.jsx";
 
 const WEEK_DAYS = ["Lunes", "Martes", "Miércoles", "Jueves"];
+const DAY_DATE_LABELS = {
+  Lunes: "25 de mayo",
+  Martes: "26 de mayo",
+  Miércoles: "27 de mayo",
+  Jueves: "28 de mayo"
+};
+
+function formatDayHeading(day) {
+  const dateLabel = DAY_DATE_LABELS[day];
+  return dateLabel ? `${day} - ${dateLabel}` : day;
+}
 
 function normalizeDay(value) {
   return String(value || "")
@@ -269,7 +280,7 @@ export default function App() {
             <section className="courses-grid" aria-label="Cursos disponibles por día">
               {coursesByDay.map((dayBlock) => (
                 <article key={dayBlock.day} className="day-card">
-                  <h3>{dayBlock.day}</h3>
+                  <h3>{formatDayHeading(dayBlock.day)}</h3>
                   <div className="day-courses">
                     {dayBlock.courses.length === 0 && <p className="hint">Sin cursos configurados.</p>}
                     {dayBlock.courses.map((course) => {
