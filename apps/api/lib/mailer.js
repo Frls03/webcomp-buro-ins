@@ -1,4 +1,5 @@
 import { env } from "./env.js";
+import nodemailer from "nodemailer";
 
 function normalizeBoolean(value) {
   return String(value || "").toLowerCase() === "true";
@@ -42,30 +43,46 @@ function buildWelcomeText({ fullName, courses }) {
 }
 
 export function isWelcomeEmailEnabled() {
-  return normalizeBoolean(env.welcomeEmailEnabled) && Boolean(env.resendApiKey && env.welcomeEmailFrom);
+  return normalizeBoolean(env.welcomeEmailEnabled) && Boolean(env.smtpUser && env.smtpPass && env.welcomeEmailFrom);
+}
+
+function parseOptionalList(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+let transporter;
+
+function getTransporter() {
+  if (transporter) return transporter;
+
+  transporter = nodemailer.createTransport({
+    host: env.smtpHost,
+    port: Number(env.smtpPort || 465),
+    secure: normalizeBoolean(env.smtpSecure),
+    auth: {
+      user: env.smtpUser,
+      pass: env.smtpPass
+    }
+  });
+
+  return transporter;
 }
 
 export async function sendWelcomeEmail({ to, fullName, courses }) {
   if (!isWelcomeEmailEnabled()) return;
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.resendApiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: env.welcomeEmailFrom,
-      to: [to],
-      reply_to: env.welcomeEmailReplyTo || undefined,
-      subject: "Inscripcion exitosa - Buro Business Week",
-      html: buildWelcomeHtml({ fullName, courses }),
-      text: buildWelcomeText({ fullName, courses })
-    })
-  });
+  const mail = {
+    from: env.welcomeEmailFrom,
+    to: [to],
+    cc: parseOptionalList(env.welcomeEmailCc),
+    replyTo: env.welcomeEmailReplyTo || undefined,
+    subject: "Inscripcion exitosa - Buro Business Week",
+    html: buildWelcomeHtml({ fullName, courses }),
+    text: buildWelcomeText({ fullName, courses })
+  };
 
-  if (!response.ok) {
-    const errorPayload = await response.text();
-    throw new Error(`No se pudo enviar correo de bienvenida: ${response.status} ${errorPayload}`);
-  }
+  await getTransporter().sendMail(mail);
 }

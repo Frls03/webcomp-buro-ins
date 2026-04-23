@@ -13,9 +13,14 @@ export const env = {
   publicAllowedOrigin: required("PUBLIC_ALLOWED_ORIGIN"),
   adminAllowedOrigin: required("ADMIN_ALLOWED_ORIGIN"),
   welcomeEmailEnabled: process.env.WELCOME_EMAIL_ENABLED || "false",
-  resendApiKey: process.env.RESEND_API_KEY || "",
+  smtpHost: process.env.SMTP_HOST || "smtp.gmail.com",
+  smtpPort: process.env.SMTP_PORT || "465",
+  smtpSecure: process.env.SMTP_SECURE || "true",
+  smtpUser: process.env.SMTP_USER || "",
+  smtpPass: process.env.SMTP_PASS || "",
   welcomeEmailFrom: process.env.WELCOME_EMAIL_FROM || "",
-  welcomeEmailReplyTo: process.env.WELCOME_EMAIL_REPLY_TO || ""
+  welcomeEmailReplyTo: process.env.WELCOME_EMAIL_REPLY_TO || "",
+  welcomeEmailCc: process.env.WELCOME_EMAIL_CC || ""
 };
 
 if (process.env.NODE_ENV === "production" && env.turnstileSecret === "replace-me") {
