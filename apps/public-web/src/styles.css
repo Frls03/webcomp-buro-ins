@@ -166,8 +166,10 @@ select:focus {
 .day-heading-image {
   display: block;
   width: min(210px, 100%);
-  height: auto;
+  height: 3.25rem;
   margin: 0 0 0.45rem;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .day-courses {
