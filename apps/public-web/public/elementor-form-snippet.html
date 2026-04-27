@@ -3,32 +3,72 @@
 
 <style>
   #nexlum-form-root {
-    --primary: #ef7d00;
-    --primary-strong: #bf5900;
-    --surface: #ffffff;
-    --surface-soft: #fff7ef;
+    --primary: #ff5c35;
+    --primary-strong: #d94524;
+    --primary-soft: rgba(255, 92, 53, 0.2);
+    --primary-surface: #ededed;
+    --surface: #ededed;
+    --surface-soft: #ededed;
     --text-main: #2f3338;
     --text-muted: #5f6873;
-    --border: #e8c7a5;
+    --border: #ff5c35;
     font-family: "Manrope", "Segoe UI", sans-serif;
     color: var(--text-main);
+    width: 100%;
+    background: #ededed;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    overflow: hidden;
+    isolation: isolate;
+    line-height: 1.4;
+    text-align: left;
   }
 
   #nexlum-form-root * {
     box-sizing: border-box;
   }
 
+  #nexlum-form-root .nx-shell {
+    width: min(860px, 100%);
+    display: grid;
+    gap: 14px;
+  }
+
+  #nexlum-form-root .nx-topbar {
+    background: #ededed;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 11px;
+  }
+
+  #nexlum-form-root .nx-topbar-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
   #nexlum-form-root .nx-card {
-    background: linear-gradient(165deg, rgba(255, 249, 242, 0.95), rgba(255, 255, 255, 0.98));
-    border: 1px solid #efd6be;
-    border-radius: 18px;
+    background: #ededed;
+    border: 1px solid var(--border);
+    border-radius: 20px;
     padding: 20px;
-    box-shadow: 0 14px 40px rgba(48, 52, 59, 0.12);
+    box-shadow: 0 16px 48px rgba(48, 52, 59, 0.12);
   }
 
   #nexlum-form-root h2 {
-    margin: 0 0 4px;
+    margin: 0;
+    font-size: clamp(18px, 2.3vw, 22px);
     color: #ab4f00;
+  }
+
+  #nexlum-form-root .nx-form-title-image {
+    display: block;
+    width: min(360px, 100%);
+    height: auto;
+    margin: 0 0 14px;
   }
 
   #nexlum-form-root .nx-subtitle {
@@ -38,12 +78,14 @@
 
   #nexlum-form-root form {
     display: grid;
-    gap: 6px;
+    gap: 8px;
   }
 
   #nexlum-form-root label {
-    margin-top: 10px;
+    display: block;
+    margin-top: 12px;
     font-weight: 700;
+    color: #3b4149;
   }
 
   #nexlum-form-root input,
@@ -54,36 +96,51 @@
 
   #nexlum-form-root input,
   #nexlum-form-root textarea {
-    border: 1px solid #d8ba98;
-    border-radius: 10px;
-    padding: 11px 12px;
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 12px 13px;
     background: var(--surface);
     width: 100%;
+    color: var(--text-main);
+  }
+
+  #nexlum-form-root textarea {
+    min-height: 110px;
+    resize: vertical;
   }
 
   #nexlum-form-root input:focus,
   #nexlum-form-root textarea:focus {
-    outline: 2px solid rgba(239, 125, 0, 0.28);
+    outline: 2px solid rgba(255, 92, 53, 0.28);
     border-color: var(--primary);
   }
 
   #nexlum-form-root .nx-courses-grid {
-    margin-top: 4px;
+    margin-top: 6px;
     display: grid;
-    gap: 10px;
+    gap: 12px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   #nexlum-form-root .nx-day-card {
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 10px;
-    background: var(--surface-soft);
+    padding: 12px;
+    background: #ededed;
   }
 
   #nexlum-form-root .nx-day-card h3 {
-    margin: 0 0 8px;
+    margin: 0 0 7px;
     color: #9b5200;
+    font-size: 16px;
+  }
+
+  #nexlum-form-root .nx-day-heading-image {
+    display: block;
+    width: min(210px, 100%);
+    height: auto;
+    margin: 0 0 7px;
   }
 
   #nexlum-form-root .nx-day-courses {
@@ -94,23 +151,26 @@
   #nexlum-form-root .nx-course-option {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 2px 8px;
+    gap: 3px 9px;
     align-items: center;
-    border: 1px solid #efddc8;
+    border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 8px;
-    background: #fff;
+    padding: 8px 9px;
+    background: #ededed;
+    color: #3b4149;
+    cursor: pointer;
   }
 
   #nexlum-form-root .nx-course-option.nx-selected {
-    border-color: #e89f57;
-    background: #fff0df;
+    border-color: var(--border);
+    background: #ededed;
   }
 
   #nexlum-form-root .nx-course-option input {
     margin: 0;
     grid-row: span 2;
     width: auto;
+    accent-color: var(--primary);
   }
 
   #nexlum-form-root .nx-course-title {
@@ -132,17 +192,30 @@
   #nexlum-form-root .nx-checkbox input {
     width: auto;
     margin-top: 3px;
+    transform: scale(1.15);
+    accent-color: var(--primary);
+  }
+
+  #nexlum-form-root .nx-checkbox label {
+    margin-top: 0;
   }
 
   #nexlum-form-root button {
     margin-top: 12px;
-    border: none;
+    border: 1px solid var(--border);
     border-radius: 10px;
     padding: 13px 16px;
     background: linear-gradient(120deg, var(--primary), var(--primary-strong));
     color: #fff;
     font-weight: 700;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+  }
+
+  #nexlum-form-root button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(255, 92, 53, 0.42);
   }
 
   #nexlum-form-root button:disabled {
@@ -163,14 +236,374 @@
   }
 
   #nexlum-form-root .nx-success {
-    margin-top: 8px;
-    color: #ab4f00;
-    font-weight: 700;
+    display: none;
+  }
+
+  #nexlum-form-root .nx-success-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    z-index: 1200;
+    width: min(420px, calc(100vw - 32px));
+    padding: 15px 16px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: #ededed;
+    color: #7d3600;
+    box-shadow: 0 18px 42px rgba(23, 18, 12, 0.22);
+    display: none;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: center;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  #nexlum-form-root .nx-success-popup.nx-visible {
+    display: grid;
+    animation: nx-popup-enter 0.34s cubic-bezier(0.2, 0.9, 0.2, 1), nx-popup-leave 0.35s ease-in 2.15s forwards;
+  }
+
+  #nexlum-form-root .nx-success-popup__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    box-shadow: 0 10px 18px rgba(255, 92, 53, 0.32);
+  }
+
+  #nexlum-form-root .nx-success-popup__content {
+    display: grid;
+    gap: 3px;
+  }
+
+  #nexlum-form-root .nx-success-popup__content strong {
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  #nexlum-form-root .nx-success-popup__content span {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  #nexlum-form-root,
+  #nexlum-form-root * {
+    box-sizing: border-box !important;
+  }
+
+  #nexlum-form-root {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    font-family: "Manrope", "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    color: var(--text-main) !important;
+    text-align: left !important;
+    background: #ededed !important;
+  }
+
+  #nexlum-form-root .nx-shell {
+    width: min(860px, 100%) !important;
+    max-width: 860px !important;
+    margin: 0 auto !important;
+    display: grid !important;
+    gap: 14px !important;
+  }
+
+  #nexlum-form-root .nx-topbar,
+  #nexlum-form-root .nx-card,
+  #nexlum-form-root .nx-day-card,
+  #nexlum-form-root .nx-course-option {
+    box-shadow: none;
+    text-decoration: none !important;
+  }
+
+  #nexlum-form-root .nx-topbar {
+    display: block !important;
+    padding: 11px !important;
+    background: #ededed !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+  }
+
+  #nexlum-form-root .nx-topbar-banner {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  #nexlum-form-root .nx-card {
+    display: block !important;
+    padding: 20px !important;
+    background: #ededed !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 16px 48px rgba(48, 52, 59, 0.12) !important;
+  }
+
+  #nexlum-form-root h2,
+  #nexlum-form-root h3,
+  #nexlum-form-root p,
+  #nexlum-form-root label,
+  #nexlum-form-root span {
+    font-family: "Manrope", "Segoe UI", sans-serif !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+
+  #nexlum-form-root h2 {
+    margin: 0 !important;
+    font-size: clamp(18px, 2.3vw, 22px) !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    color: #ab4f00 !important;
+  }
+
+  #nexlum-form-root .nx-form-title-image {
+    display: block !important;
+    width: min(360px, 100%) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 0 14px !important;
+  }
+
+  #nexlum-form-root h3 {
+    margin: 0 0 7px !important;
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    color: #9b5200 !important;
+  }
+
+  #nexlum-form-root .nx-day-heading-image {
+    display: block !important;
+    width: min(210px, 100%) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 0 7px !important;
+  }
+
+  #nexlum-form-root p {
+    margin: 0 !important;
+  }
+
+  #nexlum-form-root form {
+    display: grid !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #nexlum-form-root label {
+    display: block !important;
+    margin: 12px 0 0 !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    font-weight: 700 !important;
+    color: #3b4149 !important;
+  }
+
+  #nexlum-form-root input:not([type="checkbox"]),
+  #nexlum-form-root textarea {
+    display: block !important;
+    width: 100% !important;
+    min-height: 45px !important;
+    margin: 0 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 11px !important;
+    padding: 12px 13px !important;
+    background: #ededed !important;
+    color: var(--text-main) !important;
+    box-shadow: none !important;
+    font: inherit !important;
+    appearance: auto !important;
+  }
+
+  #nexlum-form-root textarea {
+    min-height: 110px !important;
+    resize: vertical !important;
+  }
+
+  #nexlum-form-root input:focus,
+  #nexlum-form-root textarea:focus {
+    outline: 2px solid rgba(255, 92, 53, 0.28) !important;
+    border-color: var(--primary) !important;
+  }
+
+  #nexlum-form-root .nx-courses-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin: 6px 0 0 !important;
+    padding: 0 !important;
+  }
+
+  #nexlum-form-root .nx-day-card {
+    display: block !important;
+    padding: 12px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+    background: #ededed !important;
+  }
+
+  #nexlum-form-root .nx-day-courses {
+    display: grid !important;
+    gap: 8px !important;
+  }
+
+  #nexlum-form-root .nx-course-option {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    gap: 3px 9px !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 8px 9px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    background: #ededed !important;
+    color: #3b4149 !important;
+    cursor: pointer !important;
+  }
+
+  #nexlum-form-root .nx-course-option.nx-selected {
+    border-color: var(--border) !important;
+    background: #ededed !important;
+  }
+
+  #nexlum-form-root input[type="checkbox"] {
+    width: auto !important;
+    min-width: 13px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    accent-color: var(--primary) !important;
+  }
+
+  #nexlum-form-root .nx-course-option input[type="checkbox"] {
+    grid-row: span 2 !important;
+  }
+
+  #nexlum-form-root .nx-course-title {
+    font-size: 16px !important;
+    line-height: 1.25 !important;
+    font-weight: 700 !important;
+    color: #3b4149 !important;
+  }
+
+  #nexlum-form-root .nx-course-time {
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+    color: #686f79 !important;
+  }
+
+  #nexlum-form-root .nx-checkbox {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: flex-start !important;
+    margin: 12px 0 0 !important;
+  }
+
+  #nexlum-form-root .nx-checkbox input {
+    margin-top: 4px !important;
+    transform: scale(1.15) !important;
+  }
+
+  #nexlum-form-root .nx-checkbox label {
+    margin: 0 !important;
+  }
+
+  #nexlum-form-root button {
+    display: block !important;
+    width: 100% !important;
+    min-height: 46px !important;
+    margin: 12px 0 0 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    padding: 13px 16px !important;
+    background: linear-gradient(120deg, var(--primary), var(--primary-strong)) !important;
+    color: #fff !important;
+    font: inherit !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+  }
+
+  #nexlum-form-root button:hover:not(:disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 10px 24px rgba(255, 92, 53, 0.42) !important;
+  }
+
+  #nexlum-form-root button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+  }
+
+  #nexlum-form-root .nx-error,
+  #nexlum-form-root .nx-hint {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+
+  #nexlum-form-root .nx-error {
+    color: #b42318 !important;
+  }
+
+  #nexlum-form-root .nx-hint {
+    color: var(--text-muted) !important;
+  }
+
+  @keyframes nx-popup-enter {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-18px) scale(0.94);
+    }
+
+    70% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(2px) scale(1.01);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+  }
+
+  @keyframes nx-popup-leave {
+    to {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px) scale(0.96);
+    }
   }
 
   @media (max-width: 720px) {
+    #nexlum-form-root {
+      padding: 20px 16px !important;
+    }
+
     #nexlum-form-root .nx-courses-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr !important;
+    }
+
+    #nexlum-form-root .nx-card {
+      padding: 19px !important;
     }
   }
 </style>
@@ -184,17 +617,21 @@
     const API_BASE_URL = "https://api.nexlum.site";
     const TURNSTILE_SITE_KEY = "0x4AAAAAADBYgqT7dn9f56o-";
     const WEEK_DAYS = ["Lunes", "Martes", "Mi\u00e9rcoles", "Jueves"];
-    const DAY_DATE_LABELS = {
-      Lunes: "25 de mayo",
-      Martes: "26 de mayo",
-      ["Mi\u00e9rcoles"]: "27 de mayo",
-      Jueves: "28 de mayo"
+    const ASSET_BASE_URL = "https://form.nexlum.site/inscripcion/";
+    const DAY_HEADING_IMAGES = {
+      Lunes: "25may.png",
+      Martes: "26may.png",
+      ["Mi\u00e9rcoles"]: "27may.png",
+      Jueves: "28may.png"
     };
 
     root.innerHTML = `
-      <article class="nx-card">
-        <h2>Formulario de inscripci&oacute;n</h2>
-        <p class="nx-subtitle">Completa tus datos para registrar tu participaci&oacute;n.</p>
+      <section class="nx-shell">
+        <header class="nx-topbar">
+          <img class="nx-topbar-banner" src="${ASSET_BASE_URL}banner_final.jpg" alt="Buro Business Week" />
+        </header>
+        <article class="nx-card">
+        <img class="nx-form-title-image" src="${ASSET_BASE_URL}titulo_form.png" alt="Formulario de inscripci&oacute;n" />
         <form id="nxRegistrationForm" novalidate>
           <label for="nx-fullName">Nombre completo</label>
           <input id="nx-fullName" name="fullName" required minlength="3" maxlength="120" />
@@ -204,8 +641,8 @@
           <input id="nx-email" name="email" type="email" required maxlength="160" />
           <p class="nx-error" data-error-for="email"></p>
 
-          <label for="nx-phone">N&uacute;mero de tel&eacute;fono</label>
-          <input id="nx-phone" name="phone" required minlength="8" maxlength="30" />
+          <label for="nx-phone">Numero de tel&eacute;fono (con c&oacute;digo de pa&iacute;s)</label>
+          <input id="nx-phone" name="phone" required minlength="8" maxlength="30" placeholder="+50212345678" />
           <p class="nx-error" data-error-for="phone"></p>
 
           <label for="nx-companyName">Empresa donde laboras</label>
@@ -225,12 +662,12 @@
           <p class="nx-error" data-error-for="interests"></p>
 
           <label>Cursos disponibles (puedes elegir varios)</label>
-          <section id="nxCoursesGrid" class="nx-courses-grid"></section>
+          <section id="nxCoursesGrid" class="nx-courses-grid" aria-label="Cursos disponibles por d&iacute;a"></section>
           <p class="nx-error" data-error-for="courseIds"></p>
 
           <div class="nx-checkbox">
             <input id="nx-privacyAccepted" name="privacyAccepted" type="checkbox" />
-            <label for="nx-privacyAccepted">Acepto la pol&iacute;tica de privacidad y el tratamiento de datos personales.</label>
+            <label for="nx-privacyAccepted">Autorizo el tratamiento de mis datos personales para fines informativos, comerciales y de seguimiento relacionados con los servicios de formaci&oacute;n ofrecidos por Bur&oacute; Business School.</label>
           </div>
           <p class="nx-error" data-error-for="privacyAccepted"></p>
 
@@ -241,13 +678,22 @@
           <p id="nxGlobalError" class="nx-error"></p>
           <p id="nxSuccessMessage" class="nx-success"></p>
         </form>
-      </article>
+        </article>
+      </section>
+      <div id="nxSuccessPopup" class="nx-success-popup" role="status" aria-live="polite">
+        <div class="nx-success-popup__icon" aria-hidden="true">&#10003;</div>
+        <div class="nx-success-popup__content">
+          <strong>Inscripci&oacute;n exitosa</strong>
+          <span>Tu inscripci&oacute;n fue realizada de manera exitosa.</span>
+        </div>
+      </div>
     `;
 
     const formEl = root.querySelector("#nxRegistrationForm");
     const coursesGridEl = root.querySelector("#nxCoursesGrid");
     const globalErrorEl = root.querySelector("#nxGlobalError");
     const successEl = root.querySelector("#nxSuccessMessage");
+    const successPopupEl = root.querySelector("#nxSuccessPopup");
     const submitButtonEl = root.querySelector("#nxSubmitButton");
     const selectedCourseIds = new Set();
 
@@ -261,9 +707,10 @@
         .toLowerCase();
     }
 
-    function formatDayHeading(day) {
-      const dateLabel = DAY_DATE_LABELS[day];
-      return dateLabel ? `${day} - ${dateLabel}` : day;
+    function renderDayHeading(day) {
+      const imageName = DAY_HEADING_IMAGES[day];
+      if (!imageName) return `<h3>${escapeHtml(day)}</h3>`;
+      return `<img class="nx-day-heading-image" src="${ASSET_BASE_URL}${imageName}" alt="${escapeHtml(day)}" />`;
     }
 
     function setFieldError(field, message) {
@@ -274,6 +721,7 @@
     function clearErrors() {
       globalErrorEl.textContent = "";
       successEl.textContent = "";
+      successPopupEl.classList.remove("nx-visible");
       ["fullName", "email", "phone", "companyName", "jobPosition", "academicDegree", "interests", "courseIds", "privacyAccepted", "turnstileToken"]
         .forEach((field) => setFieldError(field, ""));
     }
@@ -293,7 +741,7 @@
         .replace(/'/g, "&#39;");
     }
 
-    function renderCourses(items) {
+    function renderCourses(items, emptyMessage) {
       const grouped = new Map(WEEK_DAYS.map((day) => [normalizeDay(day), []]));
       items.forEach((course) => {
         const dayKey = normalizeDay(course.day_of_week);
@@ -310,8 +758,8 @@
               <span class="nx-course-time">${escapeHtml(course.schedule_label || "")}</span>
             </label>
           `).join("")
-          : "<p class=\"nx-hint\">Sin cursos configurados.</p>";
-        return `<article class="nx-day-card"><h3>${formatDayHeading(day)}</h3><div class="nx-day-courses">${inner}</div></article>`;
+          : `<p class="nx-hint">${escapeHtml(emptyMessage || "Sin cursos configurados.")}</p>`;
+        return `<article class="nx-day-card">${renderDayHeading(day)}<div class="nx-day-courses">${inner}</div></article>`;
       }).join("");
 
       coursesGridEl.querySelectorAll("input[data-course-id]").forEach((checkbox) => {
@@ -374,11 +822,22 @@
       }, 200);
     }
 
+    function normalizePhone(value) {
+      const cleaned = String(value || "").trim();
+      const hasPlus = cleaned.startsWith("+");
+      const digits = cleaned.replace(/\D/g, "");
+      return hasPlus ? `+${digits}` : digits;
+    }
+
+    function isInternationalPhone(value) {
+      return /^\+[1-9]\d{7,14}$/.test(String(value || ""));
+    }
+
     function readPayload() {
       return {
         fullName: formEl.fullName.value.trim(),
         email: formEl.email.value.trim(),
-        phone: formEl.phone.value.trim(),
+        phone: normalizePhone(formEl.phone.value),
         companyName: formEl.companyName.value.trim(),
         jobPosition: formEl.jobPosition.value.trim(),
         academicDegree: formEl.academicDegree.value.trim(),
@@ -393,10 +852,11 @@
       const errors = {};
       if (payload.fullName.length < 3) errors.fullName = "Ingresa un nombre v\u00e1lido.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.email = "Ingresa un correo v\u00e1lido.";
-      if (payload.phone.length < 8) errors.phone = "Ingresa un tel\u00e9fono v\u00e1lido.";
+      if (payload.phone.length < 8) errors.phone = "Ingresa un tel\u00e9fono valido.";
+      else if (!isInternationalPhone(payload.phone)) errors.phone = "Ingresa tu numero con el prefijo del \u00e1rea/pa\u00eds donde vives, por ejemplo +50212345678.";
       if (payload.companyName.length < 2) errors.companyName = "Ingresa la empresa donde laboras.";
       if (payload.jobPosition.length < 2) errors.jobPosition = "Ingresa el puesto que desempe\u00f1as.";
-      if (payload.academicDegree.length < 2) errors.academicDegree = "Ingresa tu \u00faltimo grado acad\u00e9mico.";
+      if (payload.academicDegree.length < 2) errors.academicDegree = "Ingresa tu \u00faltimo grado acad\u00e9mico cursado.";
       if (payload.interests.length < 3) errors.interests = "Describe tus intereses de estudio.";
       if (payload.courseIds.length < 1) errors.courseIds = "Selecciona al menos un curso.";
       if (!payload.privacyAccepted) errors.privacyAccepted = "Debes aceptar la pol\u00edtica de privacidad.";
@@ -431,6 +891,9 @@
       try {
         await submitRegistration(payload);
         successEl.textContent = "Tu inscripci\u00f3n fue realizada exitosamente.";
+        successPopupEl.classList.remove("nx-visible");
+        void successPopupEl.offsetWidth;
+        successPopupEl.classList.add("nx-visible");
         formEl.reset();
         selectedCourseIds.clear();
         coursesGridEl.querySelectorAll("[data-course-option]").forEach((node) => node.classList.remove("nx-selected"));
@@ -446,10 +909,12 @@
     });
 
     (async function boot() {
+      renderCourses([], "Cargando cursos...");
       try {
         await fetchCourses();
       } catch (error) {
         globalErrorEl.textContent = error.message || "No se pudieron cargar los cursos.";
+        renderCourses([], "No se pudieron cargar los cursos.");
       }
       renderTurnstile();
       updateSubmitState(false);

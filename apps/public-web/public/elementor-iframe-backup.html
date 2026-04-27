@@ -1,13 +1,17 @@
-<!-- Backup iframe snippet for Elementor -->
-<div id="nexlum-iframe-wrap" style="width:100%;max-width:980px;margin:0 auto;">
+<!-- Backup iframe snippet for Elementor: closest visual match because Elementor cannot override the app CSS inside the iframe. -->
+<div
+  id="nexlum-iframe-wrap"
+  style="width:100%;max-width:100%;margin:0 auto;padding:0;overflow:hidden;background:transparent;"
+>
   <iframe
     id="nexlum-form-iframe"
     src="https://form.nexlum.site/inscripcion"
     title="Formulario de inscripci&oacute;n"
-    style="width:100%;min-height:1200px;border:0;border-radius:12px;background:#fff;"
+    style="width:100%;min-height:1320px;border:0;border-radius:0;background:transparent;display:block;overflow:hidden;"
     loading="lazy"
     referrerpolicy="strict-origin-when-cross-origin"
     allow="clipboard-write"
+    scrolling="no"
   ></iframe>
 </div>
 
@@ -22,9 +26,9 @@
       if (event.data.source !== "buro-ins-public-web") return;
       if (event.data.type !== "iframe:resize") return;
 
-      var nextHeight = Number(event.data.height || 0);
+      var nextHeight = Math.ceil(Number(event.data.height || 0));
       if (nextHeight > 300) {
-        iframe.style.height = String(nextHeight + 24) + "px";
+        iframe.style.height = String(nextHeight + 8) + "px";
       }
     });
   })();

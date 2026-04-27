@@ -4,16 +4,15 @@ import { fetchCourses, submitRegistration } from "./lib/api.js";
 import TurnstileWidget from "./components/TurnstileWidget.jsx";
 
 const WEEK_DAYS = ["Lunes", "Martes", "Miércoles", "Jueves"];
-const DAY_DATE_LABELS = {
-  Lunes: "25 de mayo",
-  Martes: "26 de mayo",
-  Miércoles: "27 de mayo",
-  Jueves: "28 de mayo"
+const DAY_HEADING_IMAGES = {
+  Lunes: "25may.png",
+  Martes: "26may.png",
+  Miércoles: "27may.png",
+  Jueves: "28may.png"
 };
 
-function formatDayHeading(day) {
-  const dateLabel = DAY_DATE_LABELS[day];
-  return dateLabel ? `${day} - ${dateLabel}` : day;
+function getDayHeadingImage(day) {
+  return DAY_HEADING_IMAGES[day];
 }
 
 function normalizeDay(value) {
@@ -66,7 +65,8 @@ export default function App() {
   const [captchaResetSignal, setCaptchaResetSignal] = useState(0);
 
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-  const bannerSrc = `${import.meta.env.BASE_URL}business-week-banner.png`;
+  const bannerSrc = `${import.meta.env.BASE_URL}banner_final.jpg`;
+  const titleSrc = `${import.meta.env.BASE_URL}titulo_form.png`;
   const isDevelopment = import.meta.env.DEV;
   const isLocalHost =
     typeof window !== "undefined" &&
@@ -238,7 +238,7 @@ export default function App() {
         </header>
 
         <article className="card">
-          <h2>Formulario de inscripción</h2>
+          <img className="form-title-image" src={titleSrc} alt="Formulario de inscripción" />
 
           <form onSubmit={onSubmit} noValidate>
             <label htmlFor="fullName">Nombre completo</label>
@@ -249,9 +249,9 @@ export default function App() {
             <input id="email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" required />
             {errors.email && <p className="error">{errors.email}</p>}
 
-            <label htmlFor="phone">Numero de telefono (con codigo de pais)</label>
+            <label htmlFor="phone">Numero de teléfono (con código de país)</label>
             <input id="phone" name="phone" value={form.phone} onChange={updateField} autoComplete="tel" inputMode="tel" placeholder="+50212345678" required />
-            {errors.phone && <p className="error">{errors.phone}</p>}
+            {errors.phone && <p className="error">{errors.phone}</p>} 
 
             <label htmlFor="companyName">Empresa donde laboras</label>
             <input
@@ -280,7 +280,15 @@ export default function App() {
             <section className="courses-grid" aria-label="Cursos disponibles por día">
               {coursesByDay.map((dayBlock) => (
                 <article key={dayBlock.day} className="day-card">
-                  <h3>{formatDayHeading(dayBlock.day)}</h3>
+                  {getDayHeadingImage(dayBlock.day) ? (
+                    <img
+                      className="day-heading-image"
+                      src={`${import.meta.env.BASE_URL}${getDayHeadingImage(dayBlock.day)}`}
+                      alt={dayBlock.day}
+                    />
+                  ) : (
+                    <h3>{dayBlock.day}</h3>
+                  )}
                   <div className="day-courses">
                     {dayBlock.courses.length === 0 && <p className="hint">Sin cursos configurados.</p>}
                     {dayBlock.courses.map((course) => {
@@ -313,7 +321,7 @@ export default function App() {
                 required
               />
               <label htmlFor="privacyAccepted">
-                Acepto la política de privacidad y el tratamiento de datos personales.
+                Autorizo el tratamiento de mis datos personales para fines informativos, comerciales y de seguimiento relacionados con los servicios de formación ofrecidos por Buró Business School.
               </label>
             </div>
             {errors.privacyAccepted && <p className="error">{errors.privacyAccepted}</p>}

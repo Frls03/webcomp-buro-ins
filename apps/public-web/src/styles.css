@@ -1,16 +1,16 @@
 :root {
   font-family: "Manrope", "Segoe UI", sans-serif;
-  --primary: #ef7d00;
-  --primary-strong: #bf5900;
-  --primary-soft: rgba(239, 125, 0, 0.2);
-  --primary-surface: #fff3e6;
+  --primary: #ff5c35;
+  --primary-strong: #d94524;
+  --primary-soft: rgba(255, 92, 53, 0.2);
+  --primary-surface: #ededed;
   --text-main: #2f3338;
   --text-muted: #5f6873;
-  --surface: #ffffff;
-  --surface-soft: #f6f7f8;
-  --border: #d9dde2;
+  --surface: #ededed;
+  --surface-soft: #ededed;
+  --border: #ff5c35;
   color: var(--text-main);
-  background: #f3f4f6;
+  background: #ededed;
 }
 
 * {
@@ -19,10 +19,7 @@
 
 body {
   margin: 0;
-  background:
-    radial-gradient(900px 340px at 7% -10%, rgba(239, 125, 0, 0.42), transparent 64%),
-    radial-gradient(700px 280px at 100% 0%, rgba(239, 125, 0, 0.22), transparent 70%),
-    linear-gradient(180deg, #fff8f1 0%, #eef1f4 100%);
+  background: #ededed;
 }
 
 .layout {
@@ -39,8 +36,8 @@ body {
 }
 
 .topbar {
-  background: linear-gradient(130deg, rgba(255, 243, 230, 0.88), rgba(255, 255, 255, 0.9));
-  border: 1px solid #efc79f;
+  background: #ededed;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 0.7rem;
 }
@@ -50,7 +47,7 @@ body {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  border: 1px solid #efcfae;
+  border: 1px solid var(--border);
 }
 
 .brand-kicker {
@@ -67,8 +64,8 @@ body {
 }
 
 .card {
-  background: linear-gradient(165deg, rgba(255, 249, 242, 0.95), rgba(255, 255, 255, 0.97));
-  border: 1px solid #efd6be;
+  background: #ededed;
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 1.25rem;
   box-shadow: 0 16px 48px rgba(48, 52, 59, 0.12);
@@ -85,6 +82,13 @@ h2 {
   margin: 0;
   font-size: clamp(1.15rem, 2.3vw, 1.4rem);
   color: #ab4f00;
+}
+
+.form-title-image {
+  display: block;
+  width: min(360px, 100%);
+  height: auto;
+  margin: 0 0 0.9rem;
 }
 
 .subtitle {
@@ -113,7 +117,7 @@ button {
 input,
 textarea,
 select {
-  border: 1px solid #d8ba98;
+  border: 1px solid var(--border);
   border-radius: 11px;
   padding: 0.72rem 0.8rem;
   background: var(--surface);
@@ -122,7 +126,7 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid rgba(239, 125, 0, 0.28);
+  outline: 2px solid rgba(255, 92, 53, 0.28);
   border-color: var(--primary);
 }
 
@@ -147,16 +151,23 @@ select:focus {
 }
 
 .day-card {
-  border: 1px solid #efcfae;
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 0.75rem;
-  background: rgba(255, 247, 237, 0.88);
+  background: #ededed;
 }
 
 .day-card h3 {
   margin: 0 0 0.45rem;
   color: #9b5200;
   font-size: 0.98rem;
+}
+
+.day-heading-image {
+  display: block;
+  width: min(210px, 100%);
+  height: auto;
+  margin: 0 0 0.45rem;
 }
 
 .day-courses {
@@ -169,9 +180,9 @@ select:focus {
   grid-template-columns: auto 1fr;
   gap: 0.2rem 0.55rem;
   align-items: center;
-  border: 1px solid #efddc8;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: #fff;
+  background: #ededed;
   padding: 0.5rem 0.55rem;
 }
 
@@ -182,8 +193,8 @@ select:focus {
 }
 
 .course-option.selected {
-  border-color: #e89f57;
-  background: #fff0df;
+  border-color: var(--border);
+  background: #ededed;
 }
 
 .course-title {
@@ -198,7 +209,7 @@ select:focus {
 
 button {
   margin-top: 0.75rem;
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.8rem 1rem;
   background: linear-gradient(120deg, var(--primary), var(--primary-strong));
@@ -210,7 +221,7 @@ button {
 
 button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(239, 125, 0, 0.42);
+  box-shadow: 0 10px 24px rgba(255, 92, 53, 0.42);
 }
 
 button:disabled {
@@ -244,8 +255,8 @@ button:disabled {
   width: min(420px, calc(100vw - 2rem));
   padding: 0.95rem 1rem;
   border-radius: 18px;
-  border: 1px solid #f1c08d;
-  background: linear-gradient(145deg, rgba(255, 248, 240, 0.98), rgba(255, 236, 217, 0.98));
+  border: 1px solid var(--border);
+  background: #ededed;
   color: #7d3600;
   box-shadow: 0 18px 42px rgba(23, 18, 12, 0.22);
   display: grid;
@@ -267,7 +278,7 @@ button:disabled {
   color: #fff;
   font-size: 1.35rem;
   font-weight: 800;
-  box-shadow: 0 10px 18px rgba(239, 125, 0, 0.32);
+  box-shadow: 0 10px 18px rgba(255, 92, 53, 0.32);
   animation: icon-pop 0.42s ease-out 0.12s both;
 }
 
