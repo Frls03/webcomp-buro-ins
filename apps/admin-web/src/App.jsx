@@ -107,7 +107,7 @@ function friendlyCreateErrorMessage(rawMessage) {
   const normalized = message.toLowerCase();
 
   if (!message) return "No se pudo crear el registro. Intenta de nuevo.";
-  if (normalized.includes("ya existe un registro")) return "Ya existe un registro con ese correo y cursos.";
+  if (normalized.includes("ya existe un registro")) return "Ya existe un registro con ese correo.";
   if (normalized.includes("datos invalid")) return "Revisa los datos ingresados antes de crear el registro.";
   if (normalized.includes("no autorizado") || normalized.includes("forbidden")) return "No tienes permiso para crear registros.";
   if (normalized.includes("failed to fetch") || normalized.includes("no hay conexion")) return "No se pudo conectar con el servidor. Intenta de nuevo.";

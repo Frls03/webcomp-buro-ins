@@ -43,6 +43,17 @@ export default async function handler(req, res) {
     const orderedCourseIds = [...uniqueCourseIds].sort();
     const primaryCourseId = uniqueCourseIds[0];
 
+    const { data: existingRegistration, error: duplicateEmailError } = await supabaseAdmin
+      .from("registrations")
+      .select("id")
+      .eq("email", payload.email)
+      .limit(1)
+      .maybeSingle();
+    if (duplicateEmailError) throw duplicateEmailError;
+    if (existingRegistration) {
+      return badRequest(res, "Ya existe una inscripcion con ese correo.");
+    }
+
     const duplicateFingerprint = `${payload.email}:${orderedCourseIds.join(",")}`;
     const { error: insertError } = await supabaseAdmin.from("registrations").insert({
       full_name: payload.fullName,
@@ -62,7 +73,7 @@ export default async function handler(req, res) {
 
     if (insertError) {
       if (insertError.code === "23505") {
-        return badRequest(res, "Ya existe una inscripcion con ese correo para la misma seleccion de cursos.");
+        return badRequest(res, "Ya existe una inscripcion con ese correo.");
       }
       throw insertError;
     }

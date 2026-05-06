@@ -129,6 +129,18 @@ export default async function handler(req, res) {
       const payload = parsed.data;
       const uniqueCourseIds = [...new Set(payload.courseIds)];
       const orderedCourseIds = [...uniqueCourseIds].sort();
+
+      const { data: existingRegistration, error: duplicateEmailError } = await supabaseAdmin
+        .from("registrations")
+        .select("id")
+        .eq("email", payload.email)
+        .limit(1)
+        .maybeSingle();
+      if (duplicateEmailError) throw duplicateEmailError;
+      if (existingRegistration) {
+        return badRequest(res, "Ya existe un registro para ese correo.");
+      }
+
       const fingerprint = `${payload.email}:${orderedCourseIds.join(",")}`;
 
       const { data: courses, error: courseError } = await supabaseAdmin
@@ -164,7 +176,7 @@ export default async function handler(req, res) {
 
       if (insertError) {
         if (insertError.code === "23505") {
-          return badRequest(res, "Ya existe un registro para ese correo y curso.");
+          return badRequest(res, "Ya existe un registro para ese correo.");
         }
         throw insertError;
       }
