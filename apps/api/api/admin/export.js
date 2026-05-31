@@ -31,6 +31,7 @@ function toCsv(rows, coursesById) {
     "empresa",
     "puesto_desempenado",
     "ultimo_grado_academico",
+    "temas_interes",
     "cursos",
     "estado"
   ];
@@ -42,6 +43,7 @@ function toCsv(rows, coursesById) {
     row.company_name,
     row.job_position,
     row.academic_degree,
+    row.interests,
     formatCourseTitles(getSelectedCourseIds(row), coursesById),
     row.status
   ]);
@@ -64,7 +66,7 @@ export default async function handler(req, res) {
 
   let query = supabaseAdmin
     .from("registrations")
-    .select("created_at,full_name,email,phone,company_name,job_position,academic_degree,status,course_id,selected_course_ids")
+    .select("created_at,full_name,email,phone,company_name,job_position,academic_degree,interests,status,course_id,selected_course_ids")
     .order("created_at", { ascending: false })
     .limit(5000);
 
@@ -86,7 +88,8 @@ export default async function handler(req, res) {
 
   const coursesById = new Map((courses || []).map((course) => [course.id, course]));
 
-  const csv = toCsv(data || [], coursesById);
+  // UTF-8 BOM to ensure Excel opens accented characters correctly.
+  const csv = `\uFEFF${toCsv(data || [], coursesById)}`;
   await supabaseAdmin.from("audit_logs").insert({
     actor_profile_id: authResult.profile.id,
     action: "registration.export_csv",
